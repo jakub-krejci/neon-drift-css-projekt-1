@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Interaktivní pracovní list: nastyluj fan page fiktivní hry Neon Drift pomocí CSS.">
+<title>Pracovní list Neon Drift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=Russo+One&display=swap" rel="stylesheet">
+<style>
+/* Layout: sidebar s kroky + jeden čitelný sloupec; ukázky na tmavé „scéně“ jako v projektu */
+:root {
+  --bg: #f4f4fa;
+  --surface: #ffffff;
+  --surface-2: #ececf6;
+  --fg: #17162e;
+  --muted: #5c5b7a;
+  --line: #d9d8e8;
+  --pink: #b8128f;
+  --cyan: #00748a;
+  --gold: #806400;
+  --nove-bg: #fbeff9;
+  --tip-bg: #e8f6f9;
+  --pozor-bg: #fdf6e0;
+  --ok: #1f7a4a;
+  /* scéna a kód jsou tmavé v obou režimech */
+  --stage: #0b0b1a;
+  --stage-2: #16123a;
+  --stage-fg: #e8e8f5;
+  --neon-cyan: #00f0ff;
+  --neon-pink: #ff2bd6;
+  --neon-yellow: #ffe14d;
+  --neon-violet: #7c5cff;
+  --code-bg: #121129;
+  --code-fg: #d9d8f0;
+  --t-sel: #ff7ae6;
+  --t-prop: #6ff3ff;
+  --t-val: #ffe98a;
+  --t-com: #8786ab;
+  --t-pun: #b9b8d8;
+  --t-tag: #ff7ae6;
+  --t-attr: #6ff3ff;
+  --t-str: #ffe98a;
+
+  --f-display: "Russo One", "Arial Black", Impact, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e0d20; --surface: #17162f; --surface-2: #201e40; --fg: #ecebf8; --muted: #a5a4c4;
+    --line: #2f2d55; --pink: #ff6be3; --cyan: #45e9ff; --gold: #ffe14d;
+    --nove-bg: #2a1638; --tip-bg: #10283a; --pozor-bg: #2e2812; --ok: #5be39a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e0d20; --surface: #17162f; --surface-2: #201e40; --fg: #ecebf8; --muted: #a5a4c4;
+  --line: #2f2d55; --pink: #ff6be3; --cyan: #45e9ff; --gold: #ffe14d;
+  --nove-bg: #2a1638; --tip-bg: #10283a; --pozor-bg: #2e2812; --ok: #5be39a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--f-body);
+  font-size: 17px;
+  line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: var(--cyan); }
+:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; border-radius: 4px; }
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 48px;
+}
+main { min-width: 0; max-width: 800px; padding-block: 40px 80px; }
+
+/* ---------- sidebar ---------- */
+.side {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding-block: 40px 24px;
+}
+.side-title { font-family: var(--f-display); font-size: 15px; letter-spacing: 2px; margin: 0 0 4px; }
+.side-sub { font-size: 13px; color: var(--muted); margin: 0 0 18px; }
+.progress { height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+.progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink)); transition: width .4s; }
+.progress-txt { font-size: 12px; color: var(--muted); margin: 0 0 18px; font-variant-numeric: tabular-nums; }
+.side ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.side a {
+  display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 8px;
+  padding: 6px 10px; border-radius: 8px; text-decoration: none; color: var(--muted); font-size: 14.5px; line-height: 1.3;
+}
+.side a:hover { background: var(--surface-2); color: var(--fg); }
+.side a.active { background: var(--surface); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line); }
+.side .n { font-family: var(--f-display); font-size: 13px; color: var(--pink); text-align: center; }
+.side .chk { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 10px; color: transparent; }
+.side a.done .chk { background: var(--ok); border-color: var(--ok); color: var(--bg); }
+
+@media (max-width: 960px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .side { position: static; max-height: none; padding-block: 20px 0; border-bottom: 1px solid var(--line); }
+  .side ol { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+  .side a { grid-template-columns: auto auto; padding: 4px 10px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+  .side a .chk { display: none; }
+  .side a.done { box-shadow: inset 0 0 0 2px var(--ok); }
+  main { padding-block: 24px 64px; }
+}
+
+/* ---------- typografie ---------- */
+h1, h2, h3, h4 { text-wrap: balance; line-height: 1.2; }
+h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(34px, 6vw, 54px); margin: 8px 0 16px; letter-spacing: 1px; }
+h2 { font-family: var(--f-display); font-weight: 400; font-size: clamp(26px, 4vw, 34px); margin: 0; letter-spacing: .5px; }
+h3 { font-size: 21px; font-weight: 700; margin: 40px 0 10px; }
+h4 { font-size: 17px; font-weight: 700; margin: 24px 0 6px; }
+p { margin: 0 0 14px; }
+.eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--pink); margin: 0; }
+.lead { font-size: 19px; color: var(--muted); max-width: 62ch; }
+code, kbd { font-family: var(--f-mono); font-size: .86em; }
+:not(pre) > code { background: var(--surface-2); padding: 1px 6px; border-radius: 5px; color: var(--fg); white-space: nowrap; }
+kbd { border: 1px solid var(--line); border-bottom-width: 3px; border-radius: 5px; padding: 0 6px; background: var(--surface); }
+ul, ol { padding-left: 22px; margin: 0 0 14px; }
+li { margin-bottom: 4px; }
+strong { font-weight: 700; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+
+/* ---------- úvod ---------- */
+.intro { padding-bottom: 24px; }
+.before-after { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: center; margin: 28px 0 8px; }
+.before-after figure { margin: 0; min-width: 0; }
+.before-after img { width: 100%; display: block; border-radius: 8px; border: 1px solid var(--line); }
+.before-after figcaption { font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.arrow { font-family: var(--f-display); font-size: 28px; color: var(--pink); }
+@media (max-width: 560px) { .before-after { grid-template-columns: 1fr; } .arrow { transform: rotate(90deg); justify-self: center; } }
+
+.legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 14.5px; }
+.legend li { display: flex; gap: 8px; align-items: center; margin: 0; }
+.chip { display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; line-height: 1.5; white-space: nowrap; }
+.chip.nove { background: var(--pink); color: var(--bg); }
+.chip.nav { border: 1.5px solid var(--cyan); color: var(--cyan); }
+.chip.sam { border: 1.5px solid var(--gold); color: var(--gold); }
+.chip.bon { background: var(--gold); color: var(--bg); }
+
+.steps-start { counter-reset: s; list-style: none; padding: 0; margin: 0 0 14px; }
+.steps-start li { counter-increment: s; position: relative; padding-left: 40px; margin-bottom: 12px; }
+.steps-start li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%; background: var(--surface-2); font-family: var(--f-display); font-size: 13px; display: grid; place-items: center; color: var(--pink); }
+
+.filetree { font-family: var(--f-mono); font-size: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; line-height: 1.75; overflow-x: auto; white-space: pre; }
+.filetree .hl { color: var(--pink); font-weight: 600; }
+.filetree .note { color: var(--muted); font-family: var(--f-body); font-style: italic; }
+
+/* prohlížeč s náhledem */
+.browser { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); margin: 16px 0 8px; }
+.browser-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.browser-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); display: block; }
+.browser-bar span { margin-left: 10px; font-size: 12.5px; color: var(--muted); font-family: var(--f-mono); background: var(--surface); padding: 2px 10px; border-radius: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.browser-view { max-height: 560px; overflow-y: auto; background: var(--stage); }
+.browser-view img { display: block; width: 100%; max-width: 640px; margin: 0 auto; }
+
+/* mapa stránky */
+.wire { display: grid; gap: 6px; background: var(--stage); border-radius: 12px; padding: 14px; color: var(--stage-fg); font-family: var(--f-mono); font-size: 13px; }
+.wire div { border: 1.5px dashed #4a4680; border-radius: 6px; padding: 8px 10px; }
+.wire b { font-weight: 600; color: var(--neon-cyan); }
+.wire em { font-style: normal; color: var(--neon-pink); }
+.wire .row { display: flex; flex-wrap: wrap; gap: 6px; border: none; padding: 4px 0 0; }
+.wire .row div { flex: 1 1 110px; }
+.wire .tag { color: #8f8fb3; }
+
+/* ---------- kroky ---------- */
+.krok { padding-top: 56px; border-top: 1px solid var(--line); margin-top: 56px; scroll-margin-top: 12px; }
+.krok-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: start; margin-bottom: 20px; }
+.krok-num {
+  font-family: var(--f-display); font-size: 64px; line-height: .9; color: transparent;
+  -webkit-text-stroke: 2px var(--pink); min-width: 56px; text-align: center;
+}
+.krok-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 6px; font-size: 13.5px; color: var(--muted); }
+.krok-head .lead { margin: 10px 0 0; font-size: 17.5px; }
+
+/* boxy */
+.box { border-radius: var(--r); padding: 18px 20px 6px; margin: 20px 0; }
+.box-label { font-size: 12px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; margin: 0 0 8px; }
+.box.nove { background: var(--nove-bg); border: 1.5px solid var(--pink); }
+.box.nove > .box-label { color: var(--pink); }
+.box.nove > h4:first-of-type { margin-top: 0; font-family: var(--f-mono); font-size: 18px; }
+.box.tip { background: var(--tip-bg); }
+.box.tip > .box-label { color: var(--cyan); }
+.box.pozor { background: var(--pozor-bg); }
+.box.pozor > .box-label { color: var(--gold); }
+
+.ukol { border: 1.5px solid var(--line); border-radius: var(--r); margin: 22px 0; background: var(--surface); }
+.ukol-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+.ukol-id { font-family: var(--f-display); font-size: 14px; letter-spacing: 1px; color: var(--pink); }
+.ukol-head h4 { margin: 0; font-size: 17px; flex: 1 1 200px; }
+.ukol-body { padding: 14px 18px 4px; }
+.ukol-body > .code:first-child { margin-top: 0; }
+
+.kontrola { border-radius: var(--r); padding: 16px 20px; margin: 22px 0; background: var(--surface); border: 1.5px dashed var(--ok); }
+.kontrola .box-label { color: var(--ok); }
+.kontrola label, .hotovo { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; margin-bottom: 6px; }
+input[type="checkbox"] { width: 18px; height: 18px; margin-top: 4px; accent-color: var(--ok); flex: none; }
+.hotovo { margin-top: 28px; padding: 12px 16px; border-radius: var(--r); background: var(--surface-2); font-weight: 600; }
+
+/* tabulky */
+.tbl { overflow-x: auto; margin: 14px 0 18px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+th { font-size: 12.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--surface-2); }
+td code { white-space: nowrap; }
+.sw { display: inline-block; width: 13px; height: 13px; border-radius: 3px; background: var(--c); vertical-align: -1px; margin-right: 5px; box-shadow: 0 0 0 1px rgba(128,128,160,.5); }
+.pal { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 12px 0 18px; }
+.pal button {
+  all: unset; cursor: pointer; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); font-size: 13px; line-height: 1.35;
+}
+.pal button:focus-visible { outline: 3px solid var(--pink); }
+.pal i { display: block; height: 44px; background: var(--c); }
+.pal span { display: block; padding: 7px 10px; }
+.pal code { background: none !important; padding: 0 !important; font-weight: 600; }
+
+/* kód */
+.code { margin: 16px 0 18px; border-radius: var(--r); overflow: hidden; background: var(--code-bg); }
+.code-bar { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px 6px 14px; background: #1c1b3a; color: #a9a8cc; font-size: 12.5px; font-family: var(--f-mono); }
+.copy { all: unset; cursor: pointer; font-family: var(--f-body); font-size: 12.5px; font-weight: 600; padding: 3px 10px; border-radius: 6px; color: #e9e8fa; background: #2c2a55; }
+.copy:hover { background: #3b3870; }
+.copy:focus-visible { outline: 2px solid var(--neon-pink); }
+.code pre { margin: 0; padding: 14px 16px; overflow-x: auto; font-family: var(--f-mono); font-size: 14.5px; line-height: 1.6; color: var(--code-fg); tab-size: 4; }
+.t-sel { color: var(--t-sel); } .t-prop { color: var(--t-prop); } .t-val { color: var(--t-val); } .t-com { color: var(--t-com); font-style: italic; } .t-pun { color: var(--t-pun); }
+.t-tag { color: var(--t-tag); } .t-attr { color: var(--t-attr); } .t-str { color: var(--t-str); }
+.code .sw { width: 11px; height: 11px; margin-right: 4px; vertical-align: 0; }
+
+/* obrázky */
+figure.shot { margin: 18px 0; }
+figure.shot img { display: block; width: 100%; border-radius: 10px; border: 1px solid var(--line); }
+figure.shot figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+
+/* nápovědy */
+details { border: 1px solid var(--line); border-radius: var(--r); margin: 10px 0; background: var(--surface); }
+summary { cursor: pointer; padding: 10px 16px; font-weight: 600; list-style: none; display: flex; gap: 10px; align-items: center; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "+"; font-family: var(--f-mono); width: 20px; height: 20px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; font-size: 14px; color: var(--pink); flex: none; }
+details[open] summary::before { content: "–"; }
+details > div { padding: 0 16px 6px; }
+
+/* ---------- diagramy ---------- */
+.anatomy { background: var(--code-bg); border-radius: 12px; padding: 22px 16px 16px; overflow-x: auto; margin: 16px 0 10px; }
+.anat-row { display: flex; align-items: flex-start; justify-content: center; gap: 2px; min-width: max-content; margin: 0 auto; }
+.anat-part { display: flex; flex-direction: column; align-items: center; }
+.anat-part > code { font-family: var(--f-mono); font-size: 22px; padding: 4px 6px; border-radius: 6px; background: none !important; white-space: pre; }
+.anat-part > span { margin-top: 8px; padding-top: 6px; border-top: 2px solid currentColor; font-size: 12.5px; font-weight: 600; text-align: center; line-height: 1.25; color: #c9c8e6; min-width: 34px; }
+.anat-decl { display: flex; flex-direction: column; }
+.anat-decl-top { text-align: center; font-size: 12.5px; color: var(--neon-yellow); font-weight: 600; border: 2px solid var(--neon-yellow); border-bottom: none; border-radius: 8px 8px 0 0; height: 14px; margin: 0 4px 4px; position: relative; }
+.anat-decl-top b { position: relative; top: -12px; background: var(--code-bg); padding: 0 6px; }
+.anat-decl-row { display: flex; gap: 2px; }
+
+.tree-wrap { background: var(--stage); border-radius: 12px; padding: 16px; color: var(--stage-fg); margin: 16px 0; }
+.tree-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.tree-btns button, .seg button {
+  font-family: var(--f-mono); font-size: 14px; cursor: pointer; border-radius: 8px; padding: 6px 12px;
+  background: #1d1a45; color: var(--stage-fg); border: 1px solid #3a3670;
+}
+.tree-btns button[aria-pressed="true"], .seg button[aria-pressed="true"] { background: var(--neon-pink); color: #0b0b1a; border-color: var(--neon-pink); font-weight: 600; }
+.tree { font-family: var(--f-mono); font-size: 14px; line-height: 1.5; overflow-x: auto; }
+.tree .node { padding: 2px 8px; border-radius: 6px; width: max-content; transition: background .2s, color .2s; color: #b9b8d8; }
+.tree .node.hit { background: var(--neon-cyan); color: #0b0b1a; font-weight: 600; }
+.tree .kids { margin-left: 22px; border-left: 1px dashed #3a3670; padding-left: 8px; }
+.tree-out { margin: 12px 0 0; font-size: 14.5px; color: var(--neon-yellow); min-height: 1.5em; }
+
+/* box model statický diagram */
+.bm { font-size: 13px; font-weight: 600; letter-spacing: .5px; color: #0b0b1a; margin: 16px 0; max-width: 560px; }
+.bm div { position: relative; border-radius: 6px; }
+.bm .l { position: absolute; top: 6px; left: 10px; text-transform: uppercase; font-size: 12px; }
+.bm-m { background: repeating-linear-gradient(45deg, #ffcf8a, #ffcf8a 8px, #ffdcaa 8px, #ffdcaa 16px); padding: 34px 26px 26px; }
+.bm-b { background: var(--neon-pink); padding: 30px 14px 14px; }
+.bm-b > .l { color: #fff; }
+.bm-p { background: #9ff8ff; padding: 34px 26px 26px; }
+.bm-c { background: #ffffff; padding: 16px; text-align: center; font-size: 14px; border: 1.5px dashed #6d6d8a; }
+.bm-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px 20px; margin: 12px 0 18px; padding: 0; list-style: none; }
+.bm-legend li { display: grid; grid-template-columns: 18px 1fr; gap: 10px; font-size: 15px; margin: 0; }
+.bm-legend i { width: 18px; height: 18px; border-radius: 4px; margin-top: 4px; }
+
+/* hrací plochy */
+.lab { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin: 20px 0; background: var(--surface); }
+.lab-title { font-size: 12.5px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; padding: 10px 16px; border-bottom: 1px solid var(--line); color: var(--cyan); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.lab-title span { color: var(--muted); font-weight: 500; letter-spacing: 0; text-transform: none; }
+.lab-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 260px); }
+@media (max-width: 680px) { .lab-grid { grid-template-columns: minmax(0, 1fr); } }
+.stage { background: var(--stage); color: var(--stage-fg); padding: 24px; display: grid; place-items: center; min-height: 260px; overflow: hidden; }
+.controls { padding: 16px; display: flex; flex-direction: column; gap: 12px; border-left: 1px solid var(--line); }
+@media (max-width: 680px) { .controls { border-left: none; border-top: 1px solid var(--line); } }
+.ctl label { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; font-family: var(--f-mono); }
+.ctl label output { color: var(--pink); font-variant-numeric: tabular-nums; }
+.ctl input[type="range"] { width: 100%; accent-color: var(--pink); }
+.ctl select { width: 100%; font: inherit; font-size: 14px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+.lab .code { margin: 0; border-radius: 0; }
+.lab-readout { padding: 10px 16px; font-size: 14.5px; border-top: 1px solid var(--line); background: var(--surface-2); }
+.lab-readout b { color: var(--pink); font-variant-numeric: tabular-nums; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.lab .seg button { background: var(--surface-2); color: var(--fg); border-color: var(--line); font-size: 13px; padding: 5px 10px; }
+.lab .seg button[aria-pressed="true"] { background: var(--pink); color: var(--bg); border-color: var(--pink); }
+
+/* box playground */
+.bp-margin { background: repeating-linear-gradient(45deg, rgba(255,180,90,.35), rgba(255,180,90,.35) 6px, rgba(255,180,90,.15) 6px, rgba(255,180,90,.15) 12px); outline: 1px dashed rgba(255,180,90,.8); }
+.bp-box { width: 220px; border-style: solid; border-color: var(--neon-pink); background: #12707e; }
+.bp-content { background: #fff; color: #0b0b1a; font-size: 13px; text-align: center; padding: 10px 4px; font-weight: 600; }
+.bp-ruler { font-family: var(--f-mono); font-size: 12px; color: var(--neon-yellow); text-align: center; margin-top: 8px; }
+
+/* shorthand diagram */
+.sh { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 24px; align-items: center; margin: 16px 0; }
+@media (max-width: 620px) { .sh { grid-template-columns: minmax(0, 1fr); } }
+.sh svg { width: 100%; max-width: 220px; height: auto; display: block; }
+.sh svg .bx { fill: var(--surface-2); stroke: var(--line); stroke-width: 2; }
+.sh svg .lb { fill: var(--fg); font-family: var(--f-body); font-size: 14px; font-weight: 600; }
+.sh svg .nm { fill: var(--pink); font-family: "Russo One", sans-serif; font-size: 18px; }
+.sh svg .ar { fill: none; stroke: var(--pink); stroke-width: 2.5; }
+.sh svg .ah { fill: var(--pink); }
+
+/* margin auto diagram */
+.ma { background: var(--stage); border-radius: 12px; padding: 18px; color: var(--stage-fg); margin: 16px 0; }
+.ma-parent { border: 1.5px dashed #6b67a8; border-radius: 8px; padding: 22px 0 14px; position: relative; }
+.ma-parent > .l { position: absolute; top: 4px; left: 10px; font-size: 12px; color: #a3a2c8; font-family: var(--f-mono); }
+.ma-row { display: grid; grid-template-columns: 1fr minmax(0, 46%) 1fr; align-items: center; }
+.ma-gap { display: flex; align-items: center; gap: 4px; padding: 0 6px; font-family: var(--f-mono); font-size: 12.5px; color: var(--neon-yellow); }
+.ma-gap::before, .ma-gap::after { content: ""; flex: 1; height: 2px; background: var(--neon-yellow); }
+.ma-child { background: var(--stage-2); border: 2px solid var(--neon-cyan); border-radius: 8px; padding: 14px 8px; text-align: center; font-size: 13.5px; font-family: var(--f-mono); }
+
+/* display demo */
+.disp-p { max-width: 420px; font-size: 16px; line-height: 1.7; color: var(--stage-fg); }
+.disp-p a { padding: 14px 20px; background: rgba(255,43,214,.85); color: #0b0b1a; font-weight: 700; text-decoration: none; border-radius: 6px; }
+
+/* background demo */
+.bg-demo { width: 100%; height: 220px; border-radius: 10px; display: grid; place-items: center; background-color: #222; }
+.bg-demo h5 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(22px, 5vw, 34px); color: #fff; letter-spacing: 2px; }
+.stage.bg-stage { padding: 16px; display: block; }
+
+/* layers diagram */
+.layers { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: center; margin: 16px 0; }
+@media (max-width: 620px) { .layers { grid-template-columns: minmax(0, 1fr); } }
+.layer-stack { position: relative; height: 230px; perspective: 700px; }
+.layer { position: absolute; left: 8%; width: 72%; height: 120px; border-radius: 8px; transform: rotateX(48deg) rotateZ(-30deg); display: grid; place-items: center; font-size: 13px; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,.25); }
+.layer.l3 { top: 98px; background: #ccc url("img/hero.svg") center / cover; color: #fff; }
+.layer.l2 { top: 52px; background: linear-gradient(rgba(11,11,26,.2), rgba(11,11,26,.95)); border: 1.5px dashed var(--neon-cyan); color: #fff; }
+.layer.l1 { top: 6px; background: transparent; border: 1.5px dashed var(--neon-pink); color: var(--pink); }
+.layer span { transform: rotateZ(30deg); background: var(--stage); color: #fff; padding: 2px 8px; border-radius: 4px; }
+.layers ol { margin: 0; }
+
+/* gradient + shadow playground */
+.grad-box { width: 100%; height: 160px; border-radius: 10px; }
+.sh-card { width: 200px; padding: 26px 18px; text-align: center; background: var(--stage-2); border: 2px solid #2d2766; border-radius: 16px; font-weight: 700; font-family: var(--f-display); letter-spacing: 1px; }
+.ts-row { display: flex; flex-wrap: wrap; gap: 14px; margin: 14px 0; }
+.ts-row > div { flex: 1 1 200px; background: var(--stage); color: #fff; border-radius: 10px; padding: 18px; text-align: center; }
+.ts-row b { display: block; font-family: var(--f-display); font-weight: 400; font-size: 30px; letter-spacing: 2px; }
+.ts-row small { display: block; margin-top: 6px; color: #a3a2c8; font-family: var(--f-mono); font-size: 12px; }
+
+/* transition demo */
+.tr-row { display: flex; flex-wrap: wrap; gap: 26px; justify-content: center; }
+.tr-row > div { text-align: center; }
+.tr-row small { display: block; margin-top: 12px; font-family: var(--f-mono); font-size: 12.5px; color: #a3a2c8; }
+.demo-btn {
+  display: inline-block; padding: 14px 30px; background: var(--neon-pink); color: #0b0b1a; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; font-size: 14px; border-radius: 999px; text-decoration: none; cursor: pointer; border: none;
+  box-shadow: 0 0 18px rgba(255,43,214,.6); font-family: var(--f-body);
+}
+.demo-btn:hover, .demo-btn:focus-visible { background: var(--neon-cyan); box-shadow: 0 0 32px rgba(0,240,255,.8); }
+.demo-btn.slow { transition: background-color var(--dur, .3s), box-shadow var(--dur, .3s); }
+
+/* flex demo */
+.fx { width: 100%; background: #12102b; border-bottom: 2px solid var(--neon-pink); padding: 12px; border-radius: 8px; }
+.fx .fx-logo { display: inline-block; font-family: var(--f-display); color: var(--neon-cyan); font-size: 16px; padding: 4px 8px; border: 1.5px dashed #4a4680; }
+.fx .fx-nav { border: 1.5px dashed #4a4680; padding: 4px 6px; font-size: 13px; letter-spacing: 1px; }
+.fx .fx-nav span { display: inline-block; padding: 2px 8px; }
+.fx-cards { display: flex; gap: 10px; width: 100%; flex-wrap: wrap; }
+.fx-cards div { background: var(--stage-2); border: 2px solid #2d2766; border-radius: 10px; padding: 16px 8px; text-align: center; font-size: 13px; }
+
+/* transform demo */
+.tf-row { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; }
+.tf-row > div { width: 150px; padding: 22px 10px; text-align: center; background: var(--stage-2); border: 2px solid #2d2766; border-radius: 14px; transition: transform .3s, border-color .3s; cursor: default; font-family: var(--f-mono); font-size: 13px; }
+.tf-row > div:hover { border-color: var(--neon-cyan); }
+.tf-row .t1:hover { transform: scale(1.08); }
+.tf-row .t2:hover { transform: translateY(-10px); }
+.tf-row .t3:hover { transform: rotate(-4deg); }
+
+/* časová osa */
+.timeline { display: grid; grid-template-columns: repeat(9, auto); gap: 3px; margin: 14px 0 6px; font-size: 12px; font-weight: 600; }
+.timeline div { padding: 6px 4px; border-radius: 4px; background: var(--surface-2); text-align: center; min-width: 0; overflow: hidden; white-space: nowrap; }
+.timeline .hot { background: var(--pink); color: var(--bg); }
+@media (max-width: 560px) { .timeline { grid-template-columns: repeat(3, 1fr); } }
+
+.dl { display: inline-block; margin: 6px 0 4px; padding: 8px 16px; border-radius: 999px; background: var(--pink); color: var(--bg); font-weight: 700; text-decoration: none; font-size: 15px; }
+.dl:hover { background: var(--cyan); }
+footer.end { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .progress span, .tree .node { transition: none; }
+}
+</style>
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <aside class="side" aria-label="Kroky pracovního listu">
+    <p class="side-title">NEON DRIFT</p>
+    <p class="side-sub">Pracovní list · CSS</p>
+    <div class="progress" aria-hidden="true"><span id="prog"></span></div>
+    <p class="progress-txt" id="prog-txt">Hotovo 0 z 8 kroků</p>
+    <nav>
+      <ol>
+        <li><a href="#uvod"><span class="n">›</span>Úvod</a></li>
+        <li><a href="#krok-0" data-step="0"><span class="n">0</span>Opakování<span class="chk">✓</span></a></li>
+        <li><a href="#krok-1" data-step="1"><span class="n">1</span>Písma a barvy<span class="chk">✓</span></a></li>
+        <li><a href="#krok-2" data-step="2"><span class="n">2</span>Nové selektory<span class="chk">✓</span></a></li>
+        <li><a href="#krok-3" data-step="3"><span class="n">3</span>Box model<span class="chk">✓</span></a></li>
+        <li><a href="#krok-4" data-step="4"><span class="n">4</span>Pozadí<span class="chk">✓</span></a></li>
+        <li><a href="#krok-5" data-step="5"><span class="n">5</span>Neonová záře<span class="chk">✓</span></a></li>
+        <li><a href="#krok-6" data-step="6"><span class="n">6</span>Tlačítka a hover<span class="chk">✓</span></a></li>
+        <li><a href="#krok-7" data-step="7"><span class="n">7</span>Samostatně<span class="chk">✓</span></a></li>
+        <li><a href="#bonusy"><span class="n">★</span>Bonusy</a></li>
+        <li><a href="#pomoc"><span class="n">?</span>Nefunguje to</a></li>
+        <li><a href="#tahak"><span class="n">≡</span>Tahák</a></li>
+      </ol>
+    </nav>
+  </aside>
+
+  <main>
+<!-- =================================================== ÚVOD -->
+<section id="uvod" class="intro">
+  <p class="eyebrow">Seminář z informatiky · CSS · 90 minut</p>
+  <h1>Nastyluj fan page NEON DRIFT</h1>
+  <p class="lead">Dostaneš hotové HTML a prázdný soubor <code>style.css</code>. Krok za krokem z obyčejné stránky uděláš neonový web fiktivní závodní hry.</p>
+
+  <div class="before-after">
+    <figure><figcaption>Teď (bez CSS)</figcaption><img src="img/start.webp" alt="Stránka bez CSS: bílé pozadí, modré podtržené odkazy, výchozí písmo"></figure>
+    <span class="arrow" aria-hidden="true">→</span>
+    <figure><figcaption>Cíl</figcaption><img src="img/cil-hero.webp" alt="Hotová stránka: tmavé pozadí, neonový nadpis NEON DRIFT, růžové tlačítko"></figure>
+  </div>
+
+  <h3>Co se dnes naučíš</h3>
+  <p>Zopakuješ si práci s textem a barvami a přidáš spoustu nových věcí: <strong>Google Fonts</strong>, selektory <strong>id</strong> a <strong>vnořené selektory</strong>, <strong>box model</strong> (padding, margin, border), <strong>obrázky a přechody na pozadí</strong>, <strong>stíny</strong>, efekt při najetí myší (<strong>:hover</strong>) a <strong>plynulé animace</strong> (transition).</p>
+
+  <h3>Než začneš</h3>
+  <ol class="steps-start">
+    <li>Stáhni si zadání: <a class="dl" href="neon-drift-zadani.zip" download>Stáhnout neon-drift-zadani.zip</a><br>Složku <code>neon-drift</code> ze ZIPu rozbal a otevři ji ve VS Code: <strong>File → Open Folder…</strong></li>
+    <li>V levém panelu klikni pravým tlačítkem na <code>index.html</code> a zvol <strong>Open with Live Server</strong>. Stránka se otevře v prohlížeči a po každém uložení se sama obnoví.</li>
+    <li>Rozlož si okna vedle sebe: VS Code vlevo, prohlížeč vpravo (<kbd>Win</kbd> + <kbd>←</kbd> / <kbd>→</kbd>).</li>
+    <li>Všechno CSS píšeš do <code>style.css</code>. Do <code>index.html</code> sáhneš jen jednou, v kroku 1.</li>
+    <li>Po každé změně ulož <kbd>Ctrl</kbd> + <kbd>S</kbd>. Kód ti pěkně zarovná Prettier: <kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd>.</li>
+  </ol>
+
+  <h4>Co je ve složce</h4>
+<div class="filetree">neon-drift/
+├── <span class="hl">index.html</span>       <span class="note">hotové HTML, neměníš</span>
+├── <span class="hl">style.css</span>        <span class="note">prázdný, sem píšeš</span>
+└── img/
+    ├── logo.svg
+    ├── hero.svg        <span class="note">pozadí úvodní sekce</span>
+    ├── auto.svg        <span class="note">ilustrace v sekci O hře</span>
+    └── jezdec-nova.svg, jezdec-blaze.svg, jezdec-volt.svg, jezdec-shade.svg</div>
+
+  <h4>Značky v pracovním listu</h4>
+  <ul class="legend">
+    <li><span class="chip nove">Nové</span> vlastnost, kterou jste ještě nebrali, je pod ní vysvětlená</li>
+    <li><span class="chip nav">Navedeno</span> kód dostaneš celý</li>
+    <li><span class="chip sam">Samostatně</span> dostaneš zadání, kód napíšeš sám</li>
+    <li><span class="chip bon">Bonus</span> pro rychlíky</li>
+  </ul>
+
+  <h3>Časový plán</h3>
+  <div class="timeline" aria-label="Časový plán hodiny">
+    <div style="grid-column: span 1">0 · 5′</div><div>1 · 10′</div><div>2 · 5′</div><div class="hot">3 · 20′</div><div>4 · 10′</div><div>5 · 10′</div><div>6 · 10′</div><div>7 · 15′</div><div>★</div>
+  </div>
+  <p class="small muted">Krok 3 (box model) je nejdůležitější a nejdelší. Když se zasekneš, mrkni do části <a href="#pomoc">Nefunguje to</a>.</p>
+
+  <h3>Cílový vzhled</h3>
+  <p>Takhle bude stránka vypadat po kroku 7. Posouvej uvnitř rámečku.</p>
+  <div class="browser">
+    <div class="browser-bar"><i></i><i></i><i></i><span>127.0.0.1:5500/index.html</span></div>
+    <div class="browser-view"><img src="img/cil.webp" alt="Celá hotová stránka Neon Drift: hlavička, úvodní sekce, O hře, karty jezdců, novinky, turnaj a patička"></div>
+  </div>
+
+  <h3>Mapa stránky</h3>
+  <p>Tohle jsou třídy a id, které najdeš v <code>index.html</code>. Budeš je používat jako selektory.</p>
+  <div class="wire">
+    <div><span class="tag">&lt;header&gt;</span> <b>#hlavicka</b> · obsahuje <em>.logo</em> a <span class="tag">&lt;nav&gt;</span> s odkazy <span class="tag">&lt;a&gt;</span></div>
+    <div><span class="tag">&lt;section&gt;</span> <b>#hero</b> · <em>.stitek</em>, <span class="tag">&lt;h1&gt;</span>, <em>.podtitul</em>, <em>.tlacitko</em></div>
+    <div><span class="tag">&lt;section&gt;</span> <b>#o-hre</b> <em>.sekce</em> · <span class="tag">&lt;h2&gt;</span>, <em>.ilustrace</em>, odstavce</div>
+    <div><span class="tag">&lt;section&gt;</span> <b>#jezdci</b> <em>.sekce</em> · uvnitř <span class="tag">&lt;div&gt;</span> <em>.karty</em>
+      <div class="row"><div><span class="tag">&lt;article&gt;</span> <em>.karta</em><br><em>.portret</em> h3 <em>.role</em> <em>.staty</em></div><div><em>.karta</em></div><div><em>.karta</em></div><div><em>.karta</em></div></div>
+    </div>
+    <div><span class="tag">&lt;section&gt;</span> <b>#novinky</b> <em>.sekce</em> · 3× <span class="tag">&lt;article&gt;</span> <em>.novinka</em> s <em>.datum</em> a h3</div>
+    <div><span class="tag">&lt;section&gt;</span> <b>#turnaj</b> <em>.sekce</em> · <span class="tag">&lt;div&gt;</span> <em>.info-box</em> s <em>.velky-text</em>, <span class="tag">&lt;ul&gt;</span> a <em>.tlacitko</em></div>
+    <div><span class="tag">&lt;footer&gt;</span> · dva odstavce a odkaz <span class="tag">&lt;a&gt;</span></div>
+  </div>
+</section>
+
+<!-- =================================================== KROK 0 -->
+<section id="krok-0" class="krok" data-step="0">
+  <div class="krok-head">
+    <span class="krok-num" aria-hidden="true">0</span>
+    <div>
+      <p class="krok-meta"><span>5 minut</span><span class="chip nav">Opakování</span></p>
+      <h2>Opakování: propojení a syntaxe</h2>
+      <p class="lead">Ověříš, že je CSS správně připojené, a připomeneš si, jak se píše pravidlo.</p>
+    </div>
+  </div>
+
+  <h3>Propojení HTML a CSS</h3>
+  <p>V <code>index.html</code> v části <code>&lt;head&gt;</code> už je tento řádek:</p>
+  <div class="code"><div class="code-bar"><span>index.html</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="html">&lt;link rel="stylesheet" href="style.css"&gt;</pre></div>
+  <ul>
+    <li><code>rel="stylesheet"</code> říká prohlížeči: „tohle je soubor se styly“.</li>
+    <li><code>href="style.css"</code> je cesta k souboru. Protože <code>style.css</code> leží ve stejné složce jako <code>index.html</code>, stačí jen jeho název.</li>
+  </ul>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 0</span><h4>Test propojení</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <p>Napiš do <code>style.css</code> toto pravidlo a ulož:</p>
+      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">body {
+    background-color: red;
+}</pre></div>
+      <p>Zčervenalo pozadí? Propojení funguje. <strong>Pravidlo zase smaž.</strong></p>
+    </div>
+  </div>
+
+  <h3>Jak se píše CSS pravidlo</h3>
+  <div class="anatomy" role="img" aria-label="Rozbor pravidla h2 { color: #00f0ff; }: h2 je selektor, složené závorky ohraničují blok, color je vlastnost, dvojtečka odděluje vlastnost od hodnoty, #00f0ff je hodnota, středník ukončuje deklaraci.">
+    <div class="anat-row">
+      <div class="anat-part"><code class="t-sel">h2</code><span style="color:var(--t-sel)">selektor<br><small>CO stylujeme</small></span></div>
+      <div class="anat-part"><code class="t-pun">{</code><span>závorka</span></div>
+      <div class="anat-decl">
+        <div class="anat-decl-top"><b>deklarace</b></div>
+        <div class="anat-decl-row">
+          <div class="anat-part"><code class="t-prop">color</code><span style="color:var(--t-prop)">vlastnost<br><small>CO měníme</small></span></div>
+          <div class="anat-part"><code class="t-pun">:</code><span>dvoj-<br>tečka</span></div>
+          <div class="anat-part"><code class="t-val">#00f0ff</code><span style="color:var(--t-val)">hodnota<br><small>JAK to bude</small></span></div>
+          <div class="anat-part"><code class="t-pun">;</code><span>středník</span></div>
+        </div>
+      </div>
+      <div class="anat-part"><code class="t-pun">}</code><span>závorka</span></div>
+    </div>
+  </div>
+  <ul>
+    <li>Jedno pravidlo může mít libovolně deklarací. Každá končí <strong>středníkem</strong>.</li>
+    <li>Selektor <code>p</code> vybere všechny odstavce (selektor prvku). Selektor <code>.karta</code> vybere všechno s <code>class="karta"</code>. V CSS píšeš tečku, v HTML ne.</li>
+    <li>Komentář se píše <code>/* takhle */</code>. Prohlížeč ho ignoruje, tobě pomůže se v souboru vyznat.</li>
+  </ul>
+
+  <label class="hotovo"><input type="checkbox" data-save id="done-0" data-done="0"> Krok 0 mám hotový</label>
+</section>
+
+<!-- =================================================== KROK 1 -->
+<section id="krok-1" class="krok" data-step="1">
+  <div class="krok-head">
+    <span class="krok-num" aria-hidden="true">1</span>
+    <div>
+      <p class="krok-meta"><span>10 minut</span><span class="chip nav">Navedeno</span><span class="chip nove">Google Fonts</span></p>
+      <h2>Písma a barvy</h2>
+      <p class="lead">Připojíš dvě písma z Google Fonts, stránce dáš tmavé pozadí a nastylováš nadpisy.</p>
+    </div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · Google Fonts</p>
+    <h4>Písma z internetu</h4>
+    <p>Ve <code>font-family</code> můžeš použít jen písmo, které má počítač návštěvníka. Na každém počítači jsou ale jiná písma. <a href="https://fonts.google.com" target="_blank" rel="noopener">Google Fonts</a> je knihovna zdarma, odkud si prohlížeč písmo <strong>sám stáhne</strong>. Použití má dva kroky:</p>
+    <ol>
+      <li>Do <code>&lt;head&gt;</code> v HTML vložíš odkaz na písmo.</li>
+      <li>V CSS písmo použiješ ve <code>font-family</code>.</li>
+    </ol>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 1a</span><h4>Připoj písma (do index.html)</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <p>V <code>index.html</code> najdi komentář <code>&lt;!-- KROK 1: … --&gt;</code> a hned pod něj vlož tyto tři řádky:</p>
+      <div class="code"><div class="code-bar"><span>index.html</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="html">&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&amp;family=Russo+One&amp;display=swap" rel="stylesheet"&gt;</pre></div>
+      <ul>
+        <li>První dva řádky (<code>preconnect</code>) jen zrychlí stahování.</li>
+        <li>Třetí řádek stahuje písmo <strong>Exo 2</strong> (na běžný text) v tloušťkách 400, 600 a 700 a písmo <strong>Russo One</strong> (na nadpisy). Mezera v názvu se v adrese píše jako <code>+</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box tip">
+    <p class="box-label">Tip · jiné písmo</p>
+    <p>Na <a href="https://fonts.google.com" target="_blank" rel="noopener">fonts.google.com</a> si můžeš vybrat jiné písmo: klikni na něj, pak <strong>Get font → Get embed code</strong> a zkopíruj odkaz. Hlídej, aby písmo podporovalo češtinu: ve filtru jazyků zvol <strong>Czech</strong>. Jinak se písmena jako ř, č nebo ů zobrazí jiným písmem.</p>
+  </div>
+
+  <h3>Barvy projektu</h3>
+  <p>Celý web používá tuhle paletu. Kliknutím na barvu ji zkopíruješ.</p>
+  <div class="pal" id="pal"></div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 1b</span><h4>Stránka a nadpisy (do style.css)</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">/* ===== KROK 1: Celá stránka, písma a nadpisy ===== */
+
+body {
+    background-color: #0b0b1a;
+    color: #e8e8f5;
+    font-family: "Exo 2", sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+    font-family: "Russo One", sans-serif;
+    font-weight: 400;
+}
+
+h2 {
+    color: #00f0ff;
+    font-size: 40px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+h3 {
+    color: #ffffff;
+    font-size: 24px;
+}</pre></div>
+    </div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · seskupení selektorů</p>
+    <h4>h1, h2, h3 { … }</h4>
+    <p>Když chceš <strong>stejný styl pro víc selektorů</strong>, oddělíš je <strong>čárkou</strong>. Pravidlo výše platí pro všechny tři nadpisy najednou a ušetří ti psaní. Potom můžeš každému nadpisu přidat vlastní pravidlo (jako <code>h2</code> a <code>h3</code> výše).</p>
+  </div>
+
+  <div class="box tip">
+    <p class="box-label">Proč to tak je</p>
+    <ul>
+      <li><code>"Exo 2", sans-serif</code>: první je písmo, které chceme. Kdyby se nestáhlo, použije se záložní <code>sans-serif</code> (jakékoliv bezpatkové). Název s mezerou dáváme do uvozovek.</li>
+      <li><code>font-weight: 400</code> u nadpisů: Russo One má jen jednu tloušťku. Nadpisy jsou normálně tučné, takže by ho prohlížeč „ztučnil“ uměle a vypadalo by rozmazaně.</li>
+    </ul>
+  </div>
+
+  <div class="kontrola">
+    <p class="box-label">Kontrola</p>
+    <label><input type="checkbox" data-save id="k1-1"> Stránka má tmavé pozadí a světlý text.</label>
+    <label><input type="checkbox" data-save id="k1-2"> Nadpisy mají jiné, „závodní“ písmo.</label>
+    <label><input type="checkbox" data-save id="k1-3"> Nadpisy sekcí (O HŘE, JEZDCI…) jsou tyrkysové, velkými písmeny a uprostřed.</label>
+    <p class="small muted">Odkazy jsou zatím modré a podtržené. To spravíš v dalším kroku.</p>
+  </div>
+
+  <label class="hotovo"><input type="checkbox" data-save id="done-1" data-done="1"> Krok 1 mám hotový</label>
+</section>
+
+<!-- =================================================== KROK 2 -->
+<section id="krok-2" class="krok" data-step="2">
+  <div class="krok-head">
+    <span class="krok-num" aria-hidden="true">2</span>
+    <div>
+      <p class="krok-meta"><span>5 minut</span><span class="chip nav">Navedeno</span><span class="chip nove">#id</span><span class="chip nove">vnořený selektor</span></p>
+      <h2>Nové selektory: id a vnořený</h2>
+      <p class="lead">Naučíš se vybrat jeden konkrétní prvek a prvky, které leží uvnitř jiného prvku. Nastylováš s nimi hlavičku.</p>
+    </div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · selektor id</p>
+    <h4>#hlavicka { … }</h4>
+    <p>V HTML má hlavička atribut <code>id="hlavicka"</code>. V CSS ho vybereš <strong>mřížkou</strong> <code>#</code>, podobně jako třídu tečkou.</p>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>Třída</th><th>Id</th></tr></thead>
+      <tbody>
+        <tr><td>V HTML</td><td><code>class="karta"</code></td><td><code>id="hlavicka"</code></td></tr>
+        <tr><td>V CSS</td><td><code>.karta</code></td><td><code>#hlavicka</code></td></tr>
+        <tr><td>Kolikrát na stránce</td><td>kolikrát chceš</td><td><strong>jen jednou</strong>, id je jedinečné</td></tr>
+        <tr><td>Kdy použít</td><td>styl pro skupinu prvků</td><td>styl pro jeden konkrétní prvek</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · vnořený (potomkový) selektor</p>
+    <h4>#hlavicka a { … }</h4>
+    <p>Dva selektory oddělené <strong>mezerou</strong> znamenají „uvnitř“. Čti to <strong>zprava doleva</strong>: „všechny <code>a</code>, které jsou <strong>uvnitř</strong> <code>#hlavicka</code>“. Ostatní odkazy na stránce (třeba tlačítka) se tím nezmění.</p>
+  </div>
+
+  <div class="tree-wrap">
+    <p style="margin:0 0 10px;font-size:14.5px;">Vyzkoušej si to: klikni na selektor a uvidíš, které prvky stránky vybere.</p>
+    <div class="tree-btns" id="tree-btns" role="group" aria-label="Selektory"></div>
+    <div class="tree" id="tree" aria-live="polite"></div>
+    <p class="tree-out" id="tree-out"></p>
+  </div>
+  <div id="tree-src" hidden>
+    <header id="hlavicka"><img class="logo" alt=""><nav><a>O hře</a><a>Jezdci</a><a>Novinky</a><a>Turnaj</a></nav></header>
+    <main><section id="hero"><p class="stitek"></p><h1></h1><p class="podtitul"></p><a class="tlacitko">Přihlas se</a></section>
+    <section id="turnaj" class="sekce"><h2></h2><div class="info-box"><p class="velky-text"></p><ul><li></li></ul><a class="tlacitko">Registrovat</a></div></section></main>
+    <footer><p></p><p><a>Zpět nahoru</a></p></footer>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 2</span><h4>Hlavička a odkazy v menu</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">/* ===== KROK 2: Hlavička ===== */
+
+#hlavicka {
+    background-color: #12102b;
+    text-align: center;
+}
+
+#hlavicka a {
+    color: #e8e8f5;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 2px;
+}</pre></div>
+    </div>
+  </div>
+
+  <div class="box pozor">
+    <p class="box-label">Pozor na mezeru</p>
+    <p><code>#hlavicka a</code> (s mezerou) = odkazy <strong>uvnitř</strong> hlavičky. <code>#hlavicka.a</code> nebo <code>#hlavickaa</code> znamená něco úplně jiného a nebude to fungovat.</p>
+  </div>
+
+  <div class="kontrola">
+    <p class="box-label">Kontrola</p>
+    <label><input type="checkbox" data-save id="k2-1"> Hlavička má o odstín světlejší pozadí a logo s menu jsou uprostřed.</label>
+    <label><input type="checkbox" data-save id="k2-2"> Odkazy v menu jsou světlé, velkými písmeny a bez podtržení.</label>
+    <label><input type="checkbox" data-save id="k2-3"> Tlačítko „Přihlas se do turnaje“ je pořád modré a podtržené (selektor ho nevybral, to je správně).</label>
+  </div>
+
+  <label class="hotovo"><input type="checkbox" data-save id="done-2" data-done="2"> Krok 2 mám hotový</label>
+</section>
+
+<!-- =================================================== KROK 3 -->
+<section id="krok-3" class="krok" data-step="3">
+  <div class="krok-head">
+    <span class="krok-num" aria-hidden="true">3</span>
+    <div>
+      <p class="krok-meta"><span>20 minut</span><span class="chip nav">Navedeno</span><span class="chip sam">Samostatně</span><span class="chip nove">box model</span></p>
+      <h2>Box model: každý prvek je krabice</h2>
+      <p class="lead">Nejdůležitější krok dneška. Naučíš se nastavit prostor uvnitř prvku, rámeček, mezery mezi prvky a šířku. Tím dostaneš stránku do tvaru.</p>
+    </div>
+  </div>
+
+  <h3>Čtyři vrstvy každého prvku</h3>
+  <p>Prohlížeč vykresluje každý prvek (nadpis, odstavec, obrázek, sekci…) jako obdélník. Ten se skládá ze čtyř vrstev, podobně jako <strong>obraz na zdi</strong>:</p>
+
+  <div class="bm" role="img" aria-label="Schéma box modelu: uprostřed obsah, kolem něj padding, kolem paddingu border a úplně venku margin.">
+    <div class="bm-m"><span class="l">margin</span>
+      <div class="bm-b"><span class="l">border</span>
+        <div class="bm-p"><span class="l">padding</span>
+          <div class="bm-c">OBSAH<br><span style="font-weight:500">text, obrázek…</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="bm-legend">
+    <li><i style="background:#fff;border:1.5px dashed #6d6d8a"></i><span><strong>obsah</strong> (content): samotný text nebo obrázek. Jako <em>obraz</em>.</span></li>
+    <li><i style="background:#9ff8ff"></i><span><strong>padding</strong>: vnitřní okraj mezi obsahem a rámečkem. Jako <em>pasparta</em>. Má barvu pozadí prvku.</span></li>
+    <li><i style="background:var(--neon-pink)"></i><span><strong>border</strong>: rámeček. Jako <em>rám obrazu</em>.</span></li>
+    <li><i style="background:repeating-linear-gradient(45deg,#ffcf8a,#ffcf8a 4px,#ffdcaa 4px,#ffdcaa 8px)"></i><span><strong>margin</strong>: vnější okraj, mezera k sousedním prvkům. Jako <em>volné místo na zdi</em> mezi obrazy. Je vždy průhledný.</span></li>
+  </ul>
+
+  <div class="lab" id="lab-box">
+    <div class="lab-title">Laboratoř · box model <span>hýbej posuvníky</span></div>
+    <div class="lab-grid">
+      <div class="stage">
+        <div>
+          <div class="bp-margin" id="bp-m"><div class="bp-box" id="bp-b"><div class="bp-content">obsah<br>width: 220px</div></div></div>
+          <p class="bp-ruler" id="bp-ruler"></p>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="ctl"><label for="bp-pad">padding <output id="o-pad">20px</output></label><input type="range" id="bp-pad" min="0" max="48" value="20"></div>
+        <div class="ctl"><label for="bp-bor">border <output id="o-bor">4px</output></label><input type="range" id="bp-bor" min="0" max="16" value="4"></div>
+        <div class="ctl"><label for="bp-mar">margin <output id="o-mar">24px</output></label><input type="range" id="bp-mar" min="0" max="48" value="24"></div>
+        <div class="ctl"><label for="bp-rad">border-radius <output id="o-rad">0px</output></label><input type="range" id="bp-rad" min="0" max="60" value="0"></div>
+        <div class="ctl"><label for="bp-bs">box-sizing</label>
+          <select id="bp-bs"><option value="content-box">content-box (výchozí)</option><option value="border-box">border-box</option></select></div>
+      </div>
+    </div>
+    <div class="lab-readout" id="bp-read"></div>
+    <div class="code"><div class="code-bar"><span>vygenerované CSS</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" id="bp-code"></pre></div>
+  </div>
+
+  <h3>Jak se zapisují hodnoty</h3>
+  <p><code>padding</code> a <code>margin</code> můžeš napsat s jednou až čtyřmi hodnotami. Čtyři hodnoty jdou <strong>po směru hodinových ručiček od dvanáctky</strong>: nahoře, vpravo, dole, vlevo.</p>
+  <div class="sh">
+    <svg viewBox="0 0 220 220" role="img" aria-label="Pořadí hodnot: 1 nahoře, 2 vpravo, 3 dole, 4 vlevo, po směru hodinových ručiček.">
+      <defs><marker id="arh" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+      <rect class="bx" x="60" y="60" width="100" height="100" rx="8"/>
+      <path class="ar" d="M134 38 A78 78 0 0 1 182 86" marker-end="url(#arh)"/>
+      <path class="ar" d="M182 134 A78 78 0 0 1 134 182" marker-end="url(#arh)"/>
+      <path class="ar" d="M86 182 A78 78 0 0 1 38 134" marker-end="url(#arh)"/>
+      <text class="nm" x="110" y="32" text-anchor="middle">1</text><text class="lb" x="110" y="52" text-anchor="middle">nahoře</text>
+      <text class="nm" x="196" y="116" text-anchor="middle">2</text><text class="lb" x="146" y="115" text-anchor="middle" style="font-size:12px">vpravo</text>
+      <text class="nm" x="110" y="208" text-anchor="middle">3</text><text class="lb" x="110" y="178" text-anchor="middle">dole</text>
+      <text class="nm" x="22" y="116" text-anchor="middle">4</text><text class="lb" x="76" y="115" text-anchor="middle" style="font-size:12px">vlevo</text>
+    </svg>
+    <div class="tbl" style="margin:0"><table>
+      <thead><tr><th>Zápis</th><th>Význam</th></tr></thead>
+      <tbody>
+        <tr><td><code>padding: 20px;</code></td><td>všude 20&nbsp;px</td></tr>
+        <tr><td><code>padding: 10px 20px;</code></td><td>nahoře a dole 10, vlevo a vpravo 20</td></tr>
+        <tr><td><code>margin: 0 0 12px 0;</code></td><td>nahoře 0, vpravo 0, dole 12, vlevo 0</td></tr>
+        <tr><td><code>margin-bottom: 24px;</code></td><td>jen jedna strana: <code>-top</code>, <code>-right</code>, <code>-bottom</code>, <code>-left</code></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · rámeček</p>
+    <h4>border: šířka styl barva;</h4>
+    <p>Tři hodnoty oddělené mezerou, např. <code>border: 2px solid #7c5cff;</code>. Styl může být <code>solid</code> (plná), <code>dashed</code> (čárkovaná), <code>dotted</code> (tečkovaná). Rámeček jen na jedné straně: <code>border-bottom</code>, <code>border-left</code>…</p>
+    <h4>border-radius: 16px;</h4>
+    <p>Zaoblí rohy. Čím větší číslo, tím kulatější. Dva užitečné triky:</p>
+    <ul>
+      <li><code>border-radius: 50%;</code> ze čtverce udělá <strong>kruh</strong> (použiješ u portrétů jezdců).</li>
+      <li><code>border-radius: 999px;</code> z obdélníku udělá <strong>„pilulku“</strong> (použiješ u tlačítek).</li>
+    </ul>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · šířka</p>
+    <h4>width a max-width</h4>
+    <ul>
+      <li><code>width: 120px;</code> je <strong>přesná</strong> šířka. <code>width: 100%;</code> = celá šířka rodiče.</li>
+      <li><code>max-width: 900px;</code> znamená „<strong>nejvýš</strong> 900 px“. Na velkém monitoru má prvek 900 px, na mobilu se zúží na šířku displeje. Proto se hodí na obsah stránky.</li>
+    </ul>
+    <h4>margin: 0 auto; (centrování)</h4>
+    <p>Když má blok menší šířku než rodič, <code>auto</code> rozdělí zbylé místo <strong>rovnoměrně vlevo a vpravo</strong>, takže se blok vycentruje.</p>
+    <div class="ma" role="img" aria-label="Rodič na celou šířku, uprostřed blok s max-width, po stranách stejné mezery auto.">
+      <div class="ma-parent"><span class="l">rodič (celá šířka okna)</span>
+        <div class="ma-row"><div class="ma-gap">auto</div><div class="ma-child">.sekce<br>max-width: 900px</div><div class="ma-gap">auto</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · box-sizing</p>
+    <h4>* { box-sizing: border-box; }</h4>
+    <p>Normálně se <code>padding</code> a <code>border</code> <strong>přičítají</strong> k šířce: krabice s <code>width: 220px</code>, paddingem 20 a rámečkem 4 je široká 220 + 2·20 + 2·4 = <strong>268&nbsp;px</strong>. To se špatně počítá. S <code>border-box</code> je krabice široká <strong>přesně 220&nbsp;px</strong> a obsah se zúží. Vyzkoušej si to v laboratoři výše.</p>
+    <p>Hvězdička <code>*</code> je <strong>univerzální selektor</strong> a vybere úplně všechny prvky. Tohle pravidlo se dává na začátek skoro každého webu.</p>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · display</p>
+    <h4>Proč odkaz „přetéká“: inline vs. inline-block</h4>
+    <p>Odkazy <code>&lt;a&gt;</code> jsou <strong>řádkové</strong> prvky (<code>inline</code>). Pokud jim dáš padding, svisle přetečou přes sousední řádky, protože řádek se kvůli nim neroztáhne. Nastavením <code>display: inline-block</code> zůstanou v řádku, ale chovají se jako krabice a jejich padding se počítá.</p>
+  </div>
+
+  <div class="lab" id="lab-disp">
+    <div class="lab-title">Laboratoř · display <span>přepni hodnotu</span></div>
+    <div class="stage" style="min-height:0">
+      <p class="disp-p">Neon Drift je arkádová závodní hra. Klikni na <a href="#krok-3" id="disp-a">odkaz s paddingem</a> a podívej se, jak se chová vůči textu nad ním a pod ním. Text pokračuje dalším řádkem.</p>
+    </div>
+    <div class="lab-readout">
+      <div class="seg" id="disp-seg" role="group" aria-label="Hodnota display">
+        <button type="button" data-v="inline" aria-pressed="true">display: inline</button>
+        <button type="button" data-v="inline-block" aria-pressed="false">display: inline-block</button>
+        <button type="button" data-v="block" aria-pressed="false">display: block</button>
+      </div>
+      <p id="disp-txt" style="margin:10px 0 0;font-size:14.5px;"></p>
+    </div>
+  </div>
+
+  <div class="box tip">
+    <p class="box-label">Jak doplňovat pravidla</p>
+    <p>Některé selektory už v souboru máš (třeba <code>body</code> nebo <code>#hlavicka</code>). Nové řádky <strong>dopiš do existujícího pravidla</strong>. V ukázkách níže jsou nové řádky označené komentářem <code>/* NOVÉ */</code>.</p>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 3a</span><h4>Základ: box-sizing a okraj stránky</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <p>Prohlížeč dává <code>body</code> výchozí margin 8&nbsp;px, takže kolem stránky je rámeček. Vynulujeme ho. Pravidlo <code>*</code> napiš <strong>na úplný začátek</strong> souboru.</p>
+      <div class="code"><div class="code-bar"><span>style.css · na začátek</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">* {
+    box-sizing: border-box;
+}</pre></div>
+      <div class="code"><div class="code-bar"><span>style.css · doplň body</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">body {
+    margin: 0;                  /* NOVÉ */
+    background-color: #0b0b1a;
+    color: #e8e8f5;
+    font-family: "Exo 2", sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+}</pre></div>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 3b</span><h4>Hlavička</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">#hlavicka {
+    background-color: #12102b;
+    text-align: center;
+    padding: 16px 24px;                 /* NOVÉ */
+    border-bottom: 2px solid #ff2bd6;   /* NOVÉ: růžová čára pod hlavičkou */
+}
+
+/* NOVÉ pravidlo: logo bude vysoké 48 px (šířka se dopočítá sama) */
+.logo {
+    height: 48px;
+}
+
+#hlavicka a {
+    color: #e8e8f5;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 2px;
+    display: inline-block;              /* NOVÉ */
+    padding: 8px 16px;                  /* NOVÉ: odkazy od sebe odsuneme */
+}</pre></div>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 3c</span><h4>Sekce: šířka a centrování</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <p>Všechny čtyři obsahové sekce mají třídu <code>sekce</code>. Jedním pravidlem je zúžíme, vycentrujeme a dáme jim vzduch.</p>
+      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">/* ===== KROK 3: Box model ===== */
+
+.sekce {
+    max-width: 900px;       /* nejvýš 900 px široká */
+    margin: 0 auto;         /* nahoře a dole 0, po stranách auto = vycentrovat */
+    padding: 64px 24px;     /* nahoře a dole 64, po stranách 24 */
+}</pre></div>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 3d</span><h4>Ilustrace auta</h4><span class="chip sam">Samostatně</span></div>
+    <div class="ukol-body">
+      <p>Napiš pravidlo pro selektor <code>.ilustrace</code> s těmito vlastnostmi:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Vlastnost</th><th>Hodnota</th><th>Co to udělá</th></tr></thead>
+        <tbody>
+          <tr><td><code>width</code></td><td><code>100%</code></td><td>obrázek vyplní celou šířku sekce</td></tr>
+          <tr><td><code>border</code></td><td>2 px, plná čára, <span class="sw" style="--c:#7c5cff"></span><code>#7c5cff</code></td><td>fialový rámeček</td></tr>
+          <tr><td><code>border-radius</code></td><td><code>16px</code></td><td>zaoblené rohy</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 3e</span><h4>Karty jezdců</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">.karta {
+    max-width: 420px;
+    margin: 0 auto 24px auto;      /* vycentrovat + mezera 24 px pod každou kartou */
+    padding: 32px 24px;
+    background-color: #16123a;
+    border: 2px solid #2d2766;
+    border-radius: 16px;
+    text-align: center;
+}</pre></div>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 3f</span><h4>Obsah karty</h4><span class="chip sam">Samostatně</span></div>
+    <div class="ukol-body">
+      <p>Napiš čtyři pravidla podle tabulky. Pozor na selektor <code>.karta h3</code>: to je vnořený selektor z kroku 2 (nadpisy <strong>uvnitř</strong> karty).</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Selektor</th><th>Vlastnost</th><th>Hodnota</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3"><code>.portret</code></td><td><code>width</code></td><td><code>120px</code></td></tr>
+          <tr><td><code>border</code></td><td>3 px, plná, <span class="sw" style="--c:#00f0ff"></span><code>#00f0ff</code></td></tr>
+          <tr><td><code>border-radius</code></td><td><code>50%</code> (kruh)</td></tr>
+          <tr><td><code>.karta h3</code></td><td><code>margin</code></td><td>nahoře 8 px, jinde 0</td></tr>
+          <tr><td rowspan="6"><code>.role</code></td><td><code>margin</code></td><td>dole 12 px, jinde 0</td></tr>
+          <tr><td><code>color</code></td><td><span class="sw" style="--c:#ff2bd6"></span><code>#ff2bd6</code></td></tr>
+          <tr><td><code>font-weight</code></td><td><code>700</code></td></tr>
+          <tr><td><code>text-transform</code></td><td>velká písmena</td></tr>
+          <tr><td><code>letter-spacing</code></td><td><code>2px</code></td></tr>
+          <tr><td><code>font-size</code></td><td><code>14px</code></td></tr>
+          <tr><td rowspan="4"><code>.staty</code></td><td><code>margin-bottom</code></td><td><code>0</code></td></tr>
+          <tr><td><code>color</code></td><td><span class="sw" style="--c:#ffe14d"></span><code>#ffe14d</code></td></tr>
+          <tr><td><code>font-size</code></td><td><code>15px</code></td></tr>
+          <tr><td><code>font-weight</code></td><td><code>600</code></td></tr>
+        </tbody>
+      </table></div>
+      <details><summary>Nápověda: jak zapsat margin u .karta h3 a .role</summary><div>
+        <p>Čtyři hodnoty: nahoře, vpravo, dole, vlevo. Takže „nahoře 8, jinde 0“ je <code>margin: 8px 0 0 0;</code> a „dole 12, jinde 0“ je <code>margin: 0 0 12px 0;</code>.</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="box tip">
+    <p class="box-label">Bádej · vývojářské nástroje</p>
+    <p>V prohlížeči klikni pravým na kartu a zvol <strong>Prozkoumat</strong> (<kbd>F12</kbd>). Vpravo v záložce <strong>Styly / Computed</strong> uvidíš barevný box model přesně toho prvku, i s čísly. Hodnoty tam můžeš zkusmo měnit. Změny se ale neukládají do souboru.</p>
+  </div>
+
+  <div class="kontrola">
+    <p class="box-label">Kontrola</p>
+    <label><input type="checkbox" data-save id="k3-1"> Kolem stránky už není bílý rámeček.</label>
+    <label><input type="checkbox" data-save id="k3-2"> Pod hlavičkou je růžová čára a odkazy v menu mají mezi sebou mezery.</label>
+    <label><input type="checkbox" data-save id="k3-3"> Obsah je uprostřed a na širokém monitoru není roztažený přes celou obrazovku.</label>
+    <label><input type="checkbox" data-save id="k3-4"> Ilustrace auta má fialový zaoblený rámeček.</label>
+    <label><input type="checkbox" data-save id="k3-5"> Karty jezdců jsou tmavé „kartičky“ pod sebou s kulatými portréty.</label>
+  </div>
+
+  <label class="hotovo"><input type="checkbox" data-save id="done-3" data-done="3"> Krok 3 mám hotový</label>
+</section>
+
+<!-- =================================================== KROK 4 -->
+<section id="krok-4" class="krok" data-step="4">
+  <div class="krok-head">
+    <span class="krok-num" aria-hidden="true">4</span>
+    <div>
+      <p class="krok-meta"><span>10 minut</span><span class="chip nav">Navedeno</span><span class="chip sam">Samostatně</span><span class="chip nove">background-image</span><span class="chip nove">gradient</span></p>
+      <h2>Pozadí úvodní sekce</h2>
+      <p class="lead">Úvodní sekce (hero) dostane obrázek nočního města a přes něj průhledný přechod, aby byl text dobře čitelný.</p>
+    </div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · obrázek na pozadí</p>
+    <h4>background-image: url("img/hero.svg");</h4>
+    <p>Na rozdíl od <code>&lt;img&gt;</code> v HTML je obrázek na pozadí jen dekorace a přes něj může být text. Cesta v <code>url()</code> se počítá <strong>od souboru CSS</strong>. Náš <code>style.css</code> je vedle složky <code>img</code>, proto stačí <code>img/hero.svg</code>.</p>
+    <h4>background-size a background-position</h4>
+    <ul>
+      <li><code>background-size: cover;</code> obrázek se zvětší tak, aby <strong>zakryl celý prvek</strong>. Něco se ořízne, ale nikde nebude prázdné místo.</li>
+      <li><code>background-size: contain;</code> celý obrázek bude vidět, ale může zbýt prázdné místo a obrázek se pak <strong>opakuje</strong> jako dlaždice.</li>
+      <li><code>background-position: center;</code> při ořezu zůstane vidět prostředek obrázku.</li>
+    </ul>
+  </div>
+
+  <div class="lab" id="lab-bg">
+    <div class="lab-title">Laboratoř · background-size <span>přepínej</span></div>
+    <div class="stage bg-stage"><div class="bg-demo" id="bg-demo"><h5>NEON DRIFT</h5></div></div>
+    <div class="lab-readout">
+      <div class="seg" id="bg-seg" role="group" aria-label="Hodnota background-size">
+        <button type="button" data-v="auto" aria-pressed="false">auto (výchozí)</button>
+        <button type="button" data-v="contain" aria-pressed="false">contain</button>
+        <button type="button" data-v="cover" aria-pressed="true">cover</button>
+      </div>
+      <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14.5px;cursor:pointer"><input type="checkbox" id="bg-grad" style="margin:0"> přidat přes obrázek tmavý přechod (gradient)</label>
+    </div>
+    <div class="code"><div class="code-bar"><span>CSS ukázky</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" id="bg-code"></pre></div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · barevný přechod</p>
+    <h4>linear-gradient(směr, barva1, barva2)</h4>
+    <p>Prohlížeč vytvoří obrázek, ve kterém plynule přechází jedna barva do druhé. Protože je to <strong>obrázek</strong>, píše se do <code>background-image</code>, ne do <code>background-color</code>.</p>
+    <ul>
+      <li>Směr můžeš vynechat (výchozí je shora dolů), napsat slovy <code>to right</code> nebo úhlem <code>135deg</code> (šikmo).</li>
+      <li>Barvy můžou být průhledné: <code>rgba(11, 11, 26, 0.5)</code>. Čtvrté číslo je průhlednost od 0 (neviditelná) do 1 (plná).</li>
+    </ul>
+  </div>
+
+  <div class="lab" id="lab-grad">
+    <div class="lab-title">Laboratoř · linear-gradient <span>vyber barvy a směr</span></div>
+    <div class="lab-grid">
+      <div class="stage"><div class="grad-box" id="grad-box"></div></div>
+      <div class="controls">
+        <div class="ctl"><label for="g-ang">úhel <output id="o-ang">135deg</output></label><input type="range" id="g-ang" min="0" max="360" step="5" value="135"></div>
+        <div class="ctl"><label for="g-c1">barva 1</label><select id="g-c1"></select></div>
+        <div class="ctl"><label for="g-c2">barva 2</label><select id="g-c2"></select></div>
+        <p class="small muted" style="margin:0">0deg = zdola nahoru, 90deg = zleva doprava, 180deg = shora dolů.</p>
+      </div>
+    </div>
+    <div class="code"><div class="code-bar"><span>vygenerované CSS</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" id="grad-code"></pre></div>
+  </div>
+
+  <h3>Vrstvení: gradient přes obrázek</h3>
+  <div class="layers">
+    <div class="layer-stack" aria-hidden="true">
+      <div class="layer l3"><span>3 · obrázek hero.svg</span></div>
+      <div class="layer l2"><span>2 · průhledný gradient</span></div>
+      <div class="layer l1"><span>1 · text sekce</span></div>
+    </div>
+    <div>
+      <p>Do <code>background-image</code> můžeš dát <strong>víc obrázků oddělených čárkou</strong>. <strong>První je nahoře</strong>, poslední vespod.</p>
+      <ol>
+        <li>Úplně nahoře je text (obsah prvku).</li>
+        <li>Pod ním je gradient: nahoře skoro průhledný, dole skoro neprůhledný. Ztmaví obrázek, takže text je čitelný, a dole plynule přejde do barvy stránky.</li>
+        <li>Vespod je obrázek města.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 4a</span><h4>Pozadí hero sekce</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">/* ===== KROK 4: Hero sekce ===== */
+
+#hero {
+    background-image: linear-gradient(rgba(11, 11, 26, 0.2), rgba(11, 11, 26, 0.95)),
+                      url("img/hero.svg");
+    background-size: cover;
+    background-position: center;
+    padding: 120px 24px;
+    text-align: center;
+}</pre></div>
+      <p class="small muted">Dlouhý řádek <code>background-image</code> je rozdělený na dva řádky jen kvůli přehlednosti. Je to pořád jedna deklarace, středník je až na konci.</p>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 4b</span><h4>Texty v hero sekci</h4><span class="chip sam">Samostatně</span></div>
+    <div class="ukol-body">
+      <div class="tbl"><table>
+        <thead><tr><th>Selektor</th><th>Vlastnost</th><th>Hodnota</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="4"><code>#hero h1</code></td><td><code>margin</code></td><td><code>0</code></td></tr>
+          <tr><td><code>color</code></td><td><span class="sw" style="--c:#ffffff"></span><code>#ffffff</code></td></tr>
+          <tr><td><code>font-size</code></td><td><code>80px</code></td></tr>
+          <tr><td><code>letter-spacing</code></td><td><code>4px</code></td></tr>
+          <tr><td rowspan="6"><code>.stitek</code></td><td><code>margin</code></td><td><code>0</code></td></tr>
+          <tr><td><code>color</code></td><td><span class="sw" style="--c:#ffe14d"></span><code>#ffe14d</code></td></tr>
+          <tr><td><code>font-size</code></td><td><code>14px</code></td></tr>
+          <tr><td><code>font-weight</code></td><td><code>700</code></td></tr>
+          <tr><td><code>text-transform</code></td><td>velká písmena</td></tr>
+          <tr><td><code>letter-spacing</code></td><td><code>4px</code></td></tr>
+          <tr><td rowspan="2"><code>.podtitul</code></td><td><code>margin</code></td><td>nahoře 8 px, vpravo 0, dole 40 px, vlevo 0</td></tr>
+          <tr><td><code>font-size</code></td><td><code>24px</code></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="kontrola">
+    <p class="box-label">Kontrola</p>
+    <label><input type="checkbox" data-save id="k4-1"> Za nadpisem NEON DRIFT je noční město se sluncem.</label>
+    <label><input type="checkbox" data-save id="k4-2"> Dole sekce plynule tmavne do barvy stránky.</label>
+    <label><input type="checkbox" data-save id="k4-3"> Nadpis je velký a bílý, nad ním je malý žlutý štítek.</label>
+    <p class="small muted">Obrázek se nezobrazuje? Zkontroluj cestu <code>img/hero.svg</code> a uvozovky v <code>url("…")</code>.</p>
+  </div>
+
+  <label class="hotovo"><input type="checkbox" data-save id="done-4" data-done="4"> Krok 4 mám hotový</label>
+</section>
+
+<!-- =================================================== KROK 5 -->
+<section id="krok-5" class="krok" data-step="5">
+  <div class="krok-head">
+    <span class="krok-num" aria-hidden="true">5</span>
+    <div>
+      <p class="krok-meta"><span>10 minut</span><span class="chip sam">Samostatně</span><span class="chip nove">box-shadow</span><span class="chip nove">text-shadow</span></p>
+      <h2>Neonová záře</h2>
+      <p class="lead">Stín se dá použít jako klasický stín, ale i jako svítící záře. Přesně to potřebuje neonový web.</p>
+    </div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · stín krabice</p>
+    <h4>box-shadow: x y rozmazání barva;</h4>
+    <div class="anatomy" role="img" aria-label="Rozbor zápisu box-shadow: 0 je posun vodorovně, 0 je posun svisle, 24px je rozmazání, rgba je barva.">
+      <div class="anat-row">
+        <div class="anat-part"><code class="t-prop">box-shadow</code><span>vlastnost</span></div>
+        <div class="anat-part"><code class="t-pun">: </code><span></span></div>
+        <div class="anat-part"><code class="t-val">0</code><span style="color:var(--t-val)">posun<br>vodorovně</span></div>
+        <div class="anat-part"><code class="t-val"> 0</code><span style="color:var(--t-val)">posun<br>svisle</span></div>
+        <div class="anat-part"><code class="t-val"> 24px</code><span style="color:var(--t-val)">rozmazání</span></div>
+        <div class="anat-part"><code class="t-val"> rgba(0, 240, 255, 0.2)</code><span style="color:var(--t-val)">barva<br>(s průhledností)</span></div>
+        <div class="anat-part"><code class="t-pun">;</code><span></span></div>
+      </div>
+    </div>
+    <ul>
+      <li><strong>Klasický stín</strong>: posun dolů a tmavá barva, např. <code>0 8px 16px rgba(0,0,0,0.5)</code>.</li>
+      <li><strong>Neonová záře</strong>: <strong>žádný posun</strong> (0 0), velké rozmazání a svítivá barva. Stín je pak rovnoměrně kolem dokola.</li>
+      <li>Volitelně můžeš za rozmazání přidat 4. číslo, <strong>roztažení</strong> (spread), které stín zvětší.</li>
+    </ul>
+  </div>
+
+  <div class="lab" id="lab-sh">
+    <div class="lab-title">Laboratoř · box-shadow <span>najdi hezkou záři</span></div>
+    <div class="lab-grid">
+      <div class="stage"><div class="sh-card" id="sh-card">JEZDEC</div></div>
+      <div class="controls">
+        <div class="seg" id="sh-pre" role="group" aria-label="Předvolby">
+          <button type="button" data-p="stin" aria-pressed="false">klasický stín</button>
+          <button type="button" data-p="neon" aria-pressed="true">neon</button>
+        </div>
+        <div class="ctl"><label for="sh-x">x <output id="o-x">0px</output></label><input type="range" id="sh-x" min="-30" max="30" value="0"></div>
+        <div class="ctl"><label for="sh-y">y <output id="o-y">0px</output></label><input type="range" id="sh-y" min="-30" max="30" value="0"></div>
+        <div class="ctl"><label for="sh-b">rozmazání <output id="o-b">24px</output></label><input type="range" id="sh-b" min="0" max="80" value="24"></div>
+        <div class="ctl"><label for="sh-s">roztažení <output id="o-s">0px</output></label><input type="range" id="sh-s" min="-10" max="30" value="0"></div>
+        <div class="ctl"><label for="sh-c">barva</label><select id="sh-c"></select></div>
+        <div class="ctl"><label for="sh-a">průhlednost <output id="o-a">0.4</output></label><input type="range" id="sh-a" min="0" max="1" step="0.05" value="0.4"></div>
+      </div>
+    </div>
+    <div class="code"><div class="code-bar"><span>vygenerované CSS</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" id="sh-code"></pre></div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · stín textu</p>
+    <h4>text-shadow: x y rozmazání barva;</h4>
+    <p>Funguje stejně jako <code>box-shadow</code>, jen kolem písmen (a nemá roztažení). Stínů můžeš dát <strong>víc najednou, oddělených čárkou</strong>, a záře je pak silnější.</p>
+    <div class="ts-row">
+      <div><b>NEON</b><small>bez stínu</small></div>
+      <div><b style="text-shadow:0 0 24px #ff2bd6">NEON</b><small>0 0 24px #ff2bd6</small></div>
+      <div><b style="text-shadow:0 0 24px #ff2bd6, 0 0 8px #ff2bd6">NEON</b><small>0 0 24px #ff2bd6, 0 0 8px #ff2bd6</small></div>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 5a</span><h4>Záře karet</h4><span class="chip sam">Samostatně</span></div>
+    <div class="ukol-body">
+      <p>Do pravidla <code>.karta</code> přidej <code>box-shadow</code>: <strong>bez posunu</strong>, rozmazání <strong>24 px</strong>, barva tyrkysová <code>rgb(0, 240, 255)</code> s průhledností <strong>0.2</strong>.</p>
+      <details><summary>Nápověda</summary><div><p>Průhlednou barvu zapíšeš jako <code>rgba(0, 240, 255, 0.2)</code>. Hodnota má čtyři části: posun x, posun y, rozmazání, barva.</p></div></details>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 5b</span><h4>Svítící nadpis</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <p>Do pravidla <code>#hero h1</code> přidej dvojitou růžovou záři:</p>
+      <div class="code"><div class="code-bar"><span>style.css · doplň do #hero h1</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" data-start="prop">    text-shadow: 0 0 24px #ff2bd6, 0 0 8px #ff2bd6;</pre></div>
+      <p><strong>Bádej:</strong> zkus změnit barvu na <code>#00f0ff</code> nebo přidat třetí stín. Která varianta se ti líbí nejvíc?</p>
+    </div>
+  </div>
+
+  <div class="kontrola">
+    <p class="box-label">Kontrola</p>
+    <label><input type="checkbox" data-save id="k5-1"> Karty jezdců mají kolem sebe jemnou tyrkysovou záři.</label>
+    <label><input type="checkbox" data-save id="k5-2"> Nadpis NEON DRIFT růžově svítí.</label>
+  </div>
+
+  <label class="hotovo"><input type="checkbox" data-save id="done-5" data-done="5"> Krok 5 mám hotový</label>
+</section>
+
+<!-- =================================================== KROK 6 -->
+<section id="krok-6" class="krok" data-step="6">
+  <div class="krok-head">
+    <span class="krok-num" aria-hidden="true">6</span>
+    <div>
+      <p class="krok-meta"><span>10 minut</span><span class="chip nav">Navedeno</span><span class="chip sam">Samostatně</span><span class="chip nove">:hover</span><span class="chip nove">transition</span><span class="chip nove">cursor</span></p>
+      <h2>Tlačítka a reakce na myš</h2>
+      <p class="lead">Z modrých odkazů uděláš svítící tlačítka, které na najetí myší plynule změní barvu. Tím se stránka „oživí“.</p>
+    </div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · pseudotřída :hover</p>
+    <h4>.tlacitko:hover { … }</h4>
+    <p>Pseudotřída popisuje <strong>stav</strong> prvku. <code>:hover</code> platí jen ve chvíli, kdy je <strong>nad prvkem myš</strong>. Do pravidla píšeš jen to, co se má změnit. Zbytek se převezme z normálního pravidla.</p>
+    <p>Pozor: mezi <code>.tlacitko</code> a <code>:hover</code> <strong>není mezera</strong>.</p>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · plynulá změna</p>
+    <h4>transition: vlastnost čas;</h4>
+    <p>Bez transition se změna stane okamžitě. S <code>transition: background-color 0.3s;</code> se barva mění plynule 0,3 sekundy. Víc vlastností oddělíš čárkou.</p>
+    <p><strong>Důležité:</strong> <code>transition</code> píšeš do <strong>normálního</strong> pravidla, ne do <code>:hover</code>. Pak je změna plynulá při najetí myší i při odjetí.</p>
+  </div>
+
+  <div class="lab" id="lab-tr">
+    <div class="lab-title">Laboratoř · transition <span>najeď myší na tlačítka</span></div>
+    <div class="stage" style="min-height:0">
+      <div class="tr-row">
+        <div><button class="demo-btn" type="button">Bez transition</button><small>okamžitá změna</small></div>
+        <div><button class="demo-btn slow" type="button" id="tr-slow">S transition</button><small id="tr-lbl">transition: … 0.3s</small></div>
+      </div>
+    </div>
+    <div class="lab-readout"><div class="ctl"><label for="tr-dur">délka přechodu <output id="o-dur">0.3s</output></label><input type="range" id="tr-dur" min="0.1" max="2" step="0.1" value="0.3"></div></div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · kurzor</p>
+    <h4>cursor: pointer;</h4>
+    <p>Nad prvkem se ukáže „ručička“. Uživatel tak hned pozná, že na prvek jde kliknout. U odkazů je ručička automaticky, u jiných prvků ji musíš nastavit.</p>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 6a</span><h4>Menu svítí při najetí myší</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">/* ===== KROK 6: Odkazy a tlačítka ===== */
+
+/* do existujícího pravidla #hlavicka a doplň: */
+#hlavicka a {
+    transition: color 0.3s;          /* NOVÉ */
+}
+
+/* NOVÉ pravidlo */
+#hlavicka a:hover {
+    color: #00f0ff;
+}</pre></div>
+      <p class="small muted">Pro jednoduchost tu je jen nový řádek. V souboru ho dopiš na konec už existujícího pravidla <code>#hlavicka a</code>.</p>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 6b</span><h4>Tlačítko</h4><span class="chip sam">Samostatně</span></div>
+    <div class="ukol-body">
+      <p>Obě tlačítka na stránce mají třídu <code>tlacitko</code>, takže jedním pravidlem nastylujeme obě. Napiš pravidlo <code>.tlacitko</code>:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Vlastnost</th><th>Hodnota</th><th>Proč</th></tr></thead>
+        <tbody>
+          <tr><td><code>display</code></td><td><code>inline-block</code></td><td>aby padding nepřetékal (krok 3)</td></tr>
+          <tr><td><code>padding</code></td><td>16 px nahoře a dole, 36 px po stranách</td><td>velké pohodlné tlačítko</td></tr>
+          <tr><td><code>background-color</code></td><td><span class="sw" style="--c:#ff2bd6"></span><code>#ff2bd6</code></td><td></td></tr>
+          <tr><td><code>color</code></td><td><span class="sw" style="--c:#0b0b1a"></span><code>#0b0b1a</code></td><td>tmavý text na světlém tlačítku je čitelnější</td></tr>
+          <tr><td><code>font-weight</code></td><td><code>700</code></td><td></td></tr>
+          <tr><td><code>text-decoration</code></td><td><code>none</code></td><td>bez podtržení</td></tr>
+          <tr><td><code>text-transform</code></td><td>velká písmena</td><td></td></tr>
+          <tr><td><code>letter-spacing</code></td><td><code>2px</code></td><td></td></tr>
+          <tr><td><code>border-radius</code></td><td><code>999px</code></td><td>tvar pilulky</td></tr>
+          <tr><td><code>box-shadow</code></td><td><code>0 0 20px rgba(255, 43, 214, 0.6)</code></td><td>růžová záře</td></tr>
+          <tr><td><code>cursor</code></td><td><code>pointer</code></td><td>ručička</td></tr>
+          <tr><td><code>transition</code></td><td><code>background-color 0.3s, box-shadow 0.3s</code></td><td>plynulá změna dvou vlastností</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 6c</span><h4>Tlačítko při najetí myší</h4><span class="chip nav">Navedeno</span></div>
+    <div class="ukol-body">
+      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">.tlacitko:hover {
+    background-color: #00f0ff;
+    box-shadow: 0 0 32px rgba(0, 240, 255, 0.8);
+}</pre></div>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Úkol 6d</span><h4>Karta při najetí myší</h4><span class="chip sam">Samostatně</span></div>
+    <div class="ukol-body">
+      <p>Udělej, aby se karta jezdce při najetí myší „rozsvítila“:</p>
+      <ul>
+        <li>rámeček změní barvu na tyrkysovou <code>#00f0ff</code> (vlastnost <code>border-color</code>),</li>
+        <li>záře zesílí na <code>0 0 32px rgba(0, 240, 255, 0.45)</code>,</li>
+        <li>obojí se mění plynule 0,3 s.</li>
+      </ul>
+      <details><summary>Nápověda 1: kolik pravidel potřebuju?</summary><div><p>Dvě. Do existujícího <code>.karta</code> přidáš <code>transition</code>. Pak napíšeš nové pravidlo <code>.karta:hover</code> se změněnými vlastnostmi.</p></div></details>
+      <details><summary>Nápověda 2: řešení transition</summary><div><p><code>transition: border-color 0.3s, box-shadow 0.3s;</code></p></div></details>
+    </div>
+  </div>
+
+  <div class="kontrola">
+    <p class="box-label">Kontrola</p>
+    <label><input type="checkbox" data-save id="k6-1"> Odkazy v menu při najetí myší zmodrají.</label>
+    <label><input type="checkbox" data-save id="k6-2"> Obě tlačítka jsou růžové svítící „pilulky“ a při najetí plynule zmodrají.</label>
+    <label><input type="checkbox" data-save id="k6-3"> Karta jezdce se při najetí myší rozsvítí.</label>
+  </div>
+
+  <label class="hotovo"><input type="checkbox" data-save id="done-6" data-done="6"> Krok 6 mám hotový</label>
+</section>
+
+<!-- =================================================== KROK 7 -->
+<section id="krok-7" class="krok" data-step="7">
+  <div class="krok-head">
+    <span class="krok-num" aria-hidden="true">7</span>
+    <div>
+      <p class="krok-meta"><span>15 minut</span><span class="chip sam">Samostatně</span><span class="chip nove">list-style</span></p>
+      <h2>Samostatná práce: dokonči stránku</h2>
+      <p class="lead">Teď už umíš všechno potřebné. Nastyluj zbylé tři části tak, aby vypadaly jako na obrázcích. Nápovědy otvírej, až když si nevíš rady. Nejdřív zkus první, pak druhou.</p>
+    </div>
+  </div>
+
+  <h3>7a · Novinky</h3>
+  <figure class="shot"><img src="img/k7-novinky.webp" alt="Cílový vzhled novinek: tři tmavé boxy s tyrkysovou čárou vlevo, růžové datum a bílý nadpis"><figcaption>Cíl: tři články pod sebou. Každý má tmavé pozadí, tyrkysovou čáru vlevo a zaoblené pravé rohy.</figcaption></figure>
+  <details><summary>Nápověda 1: selektory a vlastnosti</summary><div>
+    <ul>
+      <li><code>.novinka</code>: <code>margin-bottom</code>, <code>padding</code>, <code>background-color</code>, <code>border-left</code>, <code>border-radius</code> (4 hodnoty: levé rohy 0, pravé zaoblené).</li>
+      <li><code>.datum</code>: <code>margin</code>, <code>color</code>, <code>font-size</code>, <code>font-weight</code>.</li>
+      <li><code>.novinka h3</code>: <code>margin</code> (menší mezery kolem nadpisu).</li>
+      <li><code>.novinka p</code>: <code>margin-bottom: 0</code>, aby pod textem nebyla zbytečná mezera.</li>
+    </ul>
+    <p class="small muted">U <code>border-radius</code> se 4 hodnotami jde pořadí rohů: levý horní, pravý horní, pravý dolní, levý dolní.</p>
+  </div></details>
+  <details><summary>Nápověda 2: hodnoty</summary><div>
+    <ul>
+      <li><code>.novinka</code>: margin-bottom <code>24px</code>, padding <code>20px 24px</code>, pozadí <code>#16123a</code>, border-left <code>4px solid #00f0ff</code>, border-radius <code>0 12px 12px 0</code></li>
+      <li><code>.datum</code>: margin <code>0</code>, barva <code>#ff2bd6</code>, velikost <code>14px</code>, tloušťka <code>700</code></li>
+      <li><code>.novinka h3</code>: margin <code>4px 0 8px 0</code></li>
+    </ul>
+  </div></details>
+
+  <h3>7b · Turnaj</h3>
+  <figure class="shot"><img src="img/k7-turnaj.webp" alt="Cílový vzhled turnaje: box se žlutým rámečkem a žlutou září, fialový přechod, žlutý nadpis NEON CUP 2026, seznam bez odrážek a růžové tlačítko"><figcaption>Cíl: box se šikmým fialovým přechodem, žlutým rámečkem a žlutou září. Seznam je bez odrážek.</figcaption></figure>
+  <div class="box nove">
+    <p class="box-label">Nové · seznam bez odrážek</p>
+    <h4>list-style: none;</h4>
+    <p>Odstraní odrážky (tečky) u <code>&lt;ul&gt;</code>. Seznam má navíc výchozí padding vlevo (místo pro odrážky), ten vynuluješ pomocí <code>padding: 0;</code>.</p>
+  </div>
+  <details><summary>Nápověda 1: selektory a vlastnosti</summary><div>
+    <ul>
+      <li><code>.info-box</code>: <code>padding</code>, <code>background-image</code> (gradient šikmo), <code>border</code>, <code>border-radius</code>, <code>box-shadow</code>, <code>text-align</code>.</li>
+      <li><code>.velky-text</code>: <code>margin</code>, <code>color</code>, <code>font-family</code> (stejné jako nadpisy), <code>font-size</code>, <code>letter-spacing</code>.</li>
+      <li><code>.info-box ul</code>: <code>list-style</code>, <code>padding</code>, <code>margin</code> (dole mezera před tlačítkem).</li>
+      <li><code>.info-box li</code>: <code>margin-bottom</code>.</li>
+      <li><code>.info-box strong</code>: <code>color</code> (tyrkysové „Kdy:“, „Kde:“…).</li>
+    </ul>
+  </div></details>
+  <details><summary>Nápověda 2: hodnoty</summary><div>
+    <ul>
+      <li><code>.info-box</code>: padding <code>40px</code>, background-image <code>linear-gradient(135deg, #2a0c4e, #12102b)</code>, border <code>2px solid #ffe14d</code>, border-radius <code>24px</code>, box-shadow <code>0 0 32px rgba(255, 225, 77, 0.3)</code>, text-align <code>center</code></li>
+      <li><code>.velky-text</code>: margin <code>0 0 16px 0</code>, barva <code>#ffe14d</code>, font-family <code>"Russo One", sans-serif</code>, velikost <code>40px</code>, letter-spacing <code>3px</code></li>
+      <li><code>.info-box ul</code>: list-style <code>none</code>, padding <code>0</code>, margin <code>0 0 32px 0</code></li>
+      <li><code>.info-box li</code>: margin-bottom <code>8px</code></li>
+      <li><code>.info-box strong</code>: barva <code>#00f0ff</code></li>
+    </ul>
+  </div></details>
+
+  <h3>7c · Patička</h3>
+  <figure class="shot"><img src="img/k7-paticka.webp" alt="Cílový vzhled patičky: tmavý pruh s růžovou čárou nahoře, šedý vycentrovaný text a tyrkysový odkaz"><figcaption>Cíl: tmavý pruh přes celou šířku, růžová čára nahoře, menší šedý text uprostřed, tyrkysový odkaz.</figcaption></figure>
+  <details><summary>Nápověda 1: selektory a vlastnosti</summary><div>
+    <ul>
+      <li><code>footer</code>: <code>padding</code>, <code>background-color</code>, <code>border-top</code>, <code>color</code>, <code>font-size</code>, <code>text-align</code>.</li>
+      <li><code>footer a</code>: <code>color</code>.</li>
+    </ul>
+  </div></details>
+  <details><summary>Nápověda 2: hodnoty</summary><div>
+    <ul>
+      <li><code>footer</code>: padding <code>32px 24px</code>, pozadí <code>#12102b</code>, border-top <code>2px solid #ff2bd6</code>, barva <code>#8f8fb3</code>, velikost <code>15px</code>, text-align <code>center</code></li>
+      <li><code>footer a</code>: barva <code>#00f0ff</code></li>
+    </ul>
+  </div></details>
+
+  <div class="kontrola">
+    <p class="box-label">Závěrečná kontrola</p>
+    <label><input type="checkbox" data-save id="k7-1"> Novinky vypadají jako na obrázku.</label>
+    <label><input type="checkbox" data-save id="k7-2"> Box turnaje má přechod, žlutý rámeček se září a seznam je bez odrážek.</label>
+    <label><input type="checkbox" data-save id="k7-3"> Patička je tmavá s růžovou čárou nahoře.</label>
+    <label><input type="checkbox" data-save id="k7-4"> Odkazy v menu tě přenesou na správnou sekci.</label>
+  </div>
+
+  <label class="hotovo"><input type="checkbox" data-save id="done-7" data-done="7"> Krok 7 mám hotový. Stránka je kompletní!</label>
+</section>
+
+<!-- =================================================== BONUSY -->
+<section id="bonusy" class="krok">
+  <div class="krok-head">
+    <span class="krok-num" aria-hidden="true">★</span>
+    <div>
+      <p class="krok-meta"><span>pro rychlíky</span><span class="chip bon">Bonus</span><span class="chip nove">flexbox</span><span class="chip nove">transform</span></p>
+      <h2>Bonusové úkoly</h2>
+      <p class="lead">Hotovo dřív? Zkus tyhle vylepšení. Na konec <code>style.css</code> si napiš komentář <code>/* ===== BONUSY ===== */</code> a pod něj je přidávej.</p>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Bonus 1</span><h4>Plynulé posouvání stránky</h4><span class="chip bon">Bonus</span></div>
+    <div class="ukol-body">
+      <p>Když teď klikneš v menu na „Turnaj“, stránka na sekci skočí. S touto vlastností se k ní plynule posune:</p>
+      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">html {
+    scroll-behavior: smooth;
+}</pre></div>
+    </div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · flexbox</p>
+    <h4>display: flex;</h4>
+    <p>Když rodiči nastavíš <code>display: flex</code>, stane se z něj <strong>flex kontejner</strong> a všechny jeho <strong>přímé děti</strong> se seřadí <strong>vedle sebe</strong> do řady. Jak se v řadě rozmístí, určuje <code>justify-content</code>. Jak se zarovnají svisle, určuje <code>align-items</code>.</p>
+  </div>
+
+  <div class="lab" id="lab-fx">
+    <div class="lab-title">Laboratoř · flexbox v hlavičce <span>přepínej justify-content</span></div>
+    <div class="stage" style="min-height:0"><div class="fx" id="fx"><span class="fx-logo">LOGO</span><div class="fx-nav"><span>O HŘE</span><span>JEZDCI</span><span>NOVINKY</span><span>TURNAJ</span></div></div></div>
+    <div class="lab-readout">
+      <div class="seg" id="fx-seg" role="group" aria-label="Rozvržení">
+        <button type="button" data-v="none" aria-pressed="true">bez flexu</button>
+        <button type="button" data-v="flex-start" aria-pressed="false">flex-start</button>
+        <button type="button" data-v="center" aria-pressed="false">center</button>
+        <button type="button" data-v="space-between" aria-pressed="false">space-between</button>
+        <button type="button" data-v="space-around" aria-pressed="false">space-around</button>
+      </div>
+    </div>
+    <div class="code"><div class="code-bar"><span>CSS ukázky</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" id="fx-code"></pre></div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Bonus 2</span><h4>Logo vlevo, menu vpravo</h4><span class="chip bon">Bonus</span></div>
+    <div class="ukol-body">
+      <p>Přímé děti <code>#hlavicka</code> jsou dvě: logo a <code>&lt;nav&gt;</code>. Pomocí flexboxu dej logo doleva a menu doprava, obojí svisle na střed.</p>
+      <details><summary>Nápověda</summary><div><p>Použij <code>display: flex</code>, <code>justify-content: space-between</code> a <code>align-items: center</code>.</p></div></details>
+      <figure class="shot"><img src="img/bonus-hlavicka.webp" alt="Hlavička s logem vlevo a menu vpravo"><figcaption>Cíl bonusu 2</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Bonus 3</span><h4>Karty jezdců vedle sebe</h4><span class="chip bon">Bonus</span></div>
+    <div class="ukol-body">
+      <p>Karty jsou zabalené v <code>&lt;div class="karty"&gt;</code>. Udělej z něj flex kontejner, aby byly 4 karty v jedné řadě.</p>
+      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">.karty {
+    display: flex;
+    flex-wrap: wrap;       /* když se karty nevejdou, zalomí se na další řádek */
+    gap: 24px;             /* mezera mezi kartami */
+}
+
+.karta {
+    flex: 1;               /* všechny karty si rozdělí místo rovným dílem */
+    min-width: 180px;      /* užší nebudou, raději se zalomí */
+    max-width: none;       /* zrušíme max-width z kroku 3 */
+    margin: 0;             /* zrušíme margin z kroku 3, mezery teď dělá gap */
+}</pre></div>
+      <div class="box tip" style="margin-bottom:12px">
+        <p class="box-label">Proč to funguje · kaskáda</p>
+        <p>Pravidlo <code>.karta</code> už máš z kroku 3. Když má <strong>stejný selektor</strong> stejnou vlastnost dvakrát, vyhrává to, co je v souboru <strong>níž</strong>. Proto bonus píšeš na konec souboru: přepíše <code>max-width</code> a <code>margin</code>, ostatní vlastnosti karty zůstanou.</p>
+      </div>
+      <figure class="shot"><img src="img/bonus-karty.webp" alt="Čtyři karty jezdců vedle sebe v jedné řadě"><figcaption>Cíl bonusu 3</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="box nove">
+    <p class="box-label">Nové · transformace</p>
+    <h4>transform: scale() / translateY() / rotate()</h4>
+    <p>Prvek zvětší, posune nebo otočí, aniž by se pohnulo cokoliv kolem něj. Hodí se na efekty při najetí myší. Najeď na kartičky:</p>
+    <div class="stage" style="min-height:0;border-radius:10px;margin-bottom:14px"><div class="tf-row"><div class="t1">scale(1.08)<br><small>zvětší o 8 %</small></div><div class="t2">translateY(-10px)<br><small>posune nahoru</small></div><div class="t3">rotate(-4deg)<br><small>pootočí</small></div></div></div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Bonus 4</span><h4>Tlačítko a karty se pohnou</h4><span class="chip bon">Bonus</span></div>
+    <div class="ukol-body">
+      <ul>
+        <li>Tlačítko se při najetí myší zvětší: <code>transform: scale(1.08);</code></li>
+        <li>Karta jezdce při najetí myší vyskočí nahoru: <code>transform: translateY(-8px);</code></li>
+        <li>Aby byl pohyb plynulý, přidej <code>transform 0.3s</code> do seznamu v <code>transition</code> (oddělené čárkou).</li>
+      </ul>
+      <details><summary>Nápověda</summary><div>
+        <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">.tlacitko {
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+
+.tlacitko:hover {
+    transform: scale(1.08);
+}</pre></div>
+        <p>Pro <code>.karta</code> a <code>.karta:hover</code> to udělej stejně.</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="ukol">
+    <div class="ukol-head"><span class="ukol-id">Bonus 5</span><h4>Udělej si to po svém</h4><span class="chip bon">Bonus</span></div>
+    <div class="ukol-body">
+      <ul>
+        <li>Změň barevné schéma: třeba místo růžové použij zelenou <code>#3ddc84</code> nebo oranžovou <code>#ff8a3d</code>. Funkce <strong>Najít a nahradit</strong> (<kbd>Ctrl</kbd> + <kbd>H</kbd>) ve VS Code ti ušetří práci.</li>
+        <li>Vyber jiné písmo na Google Fonts.</li>
+        <li>Přidej hover efekt na portrét jezdce (třeba změnu barvy rámečku).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================== POMOC -->
+<section id="pomoc" class="krok">
+  <div class="krok-head">
+    <span class="krok-num" aria-hidden="true">?</span>
+    <div>
+      <h2>Nefunguje to?</h2>
+      <p class="lead">Projdi tenhle seznam odshora. Většina chyb je jeden znak.</p>
+    </div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Příznak</th><th>Co zkontrolovat</th></tr></thead>
+    <tbody>
+      <tr><td>Nic se nemění</td><td>Uložil(a) jsi soubor (<kbd>Ctrl</kbd> + <kbd>S</kbd>)? Běží Live Server? Upravuješ <code>style.css</code> ve správné složce?</td></tr>
+      <tr><td>Nefunguje jedno pravidlo</td><td>Tečka u třídy (<code>.karta</code>), mřížka u id (<code>#hero</code>). Název přesně jako v HTML, včetně pomlček (<code>info-box</code>).</td></tr>
+      <tr><td>Nefunguje všechno od určitého místa dolů</td><td>Chybí <code>}</code> nebo středník o kus výš. Pomůže Prettier (<kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd>): když kód nezformátuje, je v něm chyba syntaxe.</td></tr>
+      <tr><td>Vlastnost je ve VS Code podtržená</td><td>Překlep v názvu vlastnosti nebo hodnoty (<code>backround</code>, <code>centre</code>).</td></tr>
+      <tr><td>Nezobrazí se obrázek na pozadí</td><td>Cesta <code>url("img/hero.svg")</code>, uvozovky a závorky. Píšeš to do <code>background-image</code>?</td></tr>
+      <tr><td>Nezobrazí se písmo</td><td>Je odkaz na Google Fonts v <code>&lt;head&gt;</code>? Název ve <code>font-family</code> v uvozovkách a přesně: <code>"Exo 2"</code>, <code>"Russo One"</code>.</td></tr>
+      <tr><td>Hodnota v px nefunguje</td><td>Mezi číslem a jednotkou nesmí být mezera: <code>24px</code>, ne <code>24 px</code>.</td></tr>
+      <tr><td>Hover se mění skokem</td><td><code>transition</code> patří do normálního pravidla, ne do <code>:hover</code>.</td></tr>
+      <tr><td>Pořád nevíš?</td><td>Pravým tlačítkem na prvek → <strong>Prozkoumat</strong>. Přeškrtnutá vlastnost znamená, že ji přepsalo jiné pravidlo. Žlutý vykřičník znamená neplatnou hodnotu.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- =================================================== TAHÁK -->
+<section id="tahak" class="krok">
+  <div class="krok-head">
+    <span class="krok-num" aria-hidden="true">≡</span>
+    <div>
+      <h2>Tahák: co je dnes nové</h2>
+      <p class="lead">Všechno nové z dnešní hodiny na jednom místě.</p>
+    </div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Zápis</th><th>Co dělá</th><th>Příklad</th></tr></thead>
+    <tbody>
+      <tr><td><code>#id</code></td><td>vybere prvek s daným id</td><td><code>#hero</code></td></tr>
+      <tr><td><code>A B</code></td><td>vybere B uvnitř A</td><td><code>.karta h3</code></td></tr>
+      <tr><td><code>A, B</code></td><td>stejný styl pro A i B</td><td><code>h1, h2, h3</code></td></tr>
+      <tr><td><code>*</code></td><td>vybere všechny prvky</td><td><code>* { box-sizing: border-box; }</code></td></tr>
+      <tr><td><code>:hover</code></td><td>stav „myš je nad prvkem“</td><td><code>.tlacitko:hover</code></td></tr>
+      <tr><td><code>padding</code></td><td>vnitřní okraj</td><td><code>16px 36px</code></td></tr>
+      <tr><td><code>margin</code></td><td>vnější okraj</td><td><code>0 auto</code></td></tr>
+      <tr><td><code>border</code></td><td>rámeček: šířka styl barva</td><td><code>2px solid #ff2bd6</code></td></tr>
+      <tr><td><code>border-radius</code></td><td>zaoblení rohů</td><td><code>16px</code>, <code>50%</code>, <code>999px</code></td></tr>
+      <tr><td><code>width</code> / <code>max-width</code></td><td>šířka / největší šířka</td><td><code>100%</code>, <code>900px</code></td></tr>
+      <tr><td><code>box-sizing</code></td><td>šířka zahrnuje padding a border</td><td><code>border-box</code></td></tr>
+      <tr><td><code>display</code></td><td>chování prvku</td><td><code>inline-block</code>, <code>flex</code></td></tr>
+      <tr><td><code>background-image</code></td><td>obrázek / přechod na pozadí</td><td><code>url("img/hero.svg")</code></td></tr>
+      <tr><td><code>linear-gradient()</code></td><td>barevný přechod</td><td><code>linear-gradient(135deg, #2a0c4e, #12102b)</code></td></tr>
+      <tr><td><code>background-size</code></td><td>velikost obrázku na pozadí</td><td><code>cover</code></td></tr>
+      <tr><td><code>background-position</code></td><td>umístění obrázku na pozadí</td><td><code>center</code></td></tr>
+      <tr><td><code>box-shadow</code></td><td>stín / záře krabice</td><td><code>0 0 24px rgba(0,240,255,0.2)</code></td></tr>
+      <tr><td><code>text-shadow</code></td><td>stín / záře textu</td><td><code>0 0 24px #ff2bd6</code></td></tr>
+      <tr><td><code>transition</code></td><td>plynulá změna</td><td><code>color 0.3s</code></td></tr>
+      <tr><td><code>cursor</code></td><td>tvar kurzoru</td><td><code>pointer</code></td></tr>
+      <tr><td><code>list-style</code></td><td>odrážky seznamu</td><td><code>none</code></td></tr>
+      <tr><td><code>transform</code></td><td>zvětšení, posun, otočení</td><td><code>scale(1.08)</code></td></tr>
+    </tbody>
+  </table></div>
+  <footer class="end">Neon Drift je fiktivní hra vytvořená pro výuku CSS. Všechny obrázky jsou původní ilustrace.</footer>
+</section>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const swatch = v => v.replace(/(#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b|rgba?\([^)]*\))/g, m => '<span class="sw" style="--c:' + m + '"></span>' + m);
+
+  /* ---------- zvýraznění CSS ---------- */
+  function hlCSS(src, start) {
+    let out = "", buf = "", state = start || "sel", i = 0;
+    const flush = () => {
+      if (!buf) return;
+      if (state === "val") out += '<span class="t-val">' + swatch(esc(buf)) + "</span>";
+      else out += '<span class="t-' + state + '">' + esc(buf) + "</span>";
+      buf = "";
+    };
+    while (i < src.length) {
+      if (src.startsWith("/*", i)) {
+        flush();
+        const e = src.indexOf("*/", i + 2), end = e < 0 ? src.length : e + 2;
+        out += '<span class="t-com">' + esc(src.slice(i, end)) + "</span>"; i = end; continue;
+      }
+      const c = src[i];
+      if (state === "sel" && c === "{") { flush(); out += '<span class="t-pun">{</span>'; state = "prop"; }
+      else if (state === "prop" && c === ":") { flush(); out += '<span class="t-pun">:</span>'; state = "val"; }
+      else if (state === "prop" && c === "}") { flush(); out += '<span class="t-pun">}</span>'; state = "sel"; }
+      else if (state === "val" && c === ";") { flush(); out += '<span class="t-pun">;</span>'; state = "prop"; }
+      else if (state === "val" && c === "}") { flush(); out += '<span class="t-pun">}</span>'; state = "sel"; }
+      else buf += c;
+      i++;
+    }
+    flush();
+    return out;
+  }
+  /* ---------- zvýraznění HTML ---------- */
+  function hlHTML(src) {
+    let s = esc(src);
+    s = s.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="t-com">$1</span>');
+    s = s.replace(/(&lt;\/?)([a-zA-Z0-9-]+)((?:\s[\s\S]*?)?)(\/?&gt;)/g, (m, a, tag, attrs, b) => {
+      attrs = attrs.replace(/([\w-]+)(=)("[^"]*")/g, '<span class="t-attr">$1</span>$2<span class="t-str">$3</span>')
+                   .replace(/\s(crossorigin)(?=\s|$)/g, ' <span class="t-attr">$1</span>');
+      return '<span class="t-tag">' + a + tag + "</span>" + attrs + '<span class="t-tag">' + b + "</span>";
+    });
+    return s;
+  }
+  function paint(pre) {
+    const raw = pre.textContent;
+    pre.dataset.raw = raw;
+    pre.innerHTML = pre.dataset.lang === "html" ? hlHTML(raw) : hlCSS(raw, pre.dataset.start);
+  }
+  function setCode(pre, text) { pre.textContent = text; paint(pre); }
+  document.querySelectorAll("pre[data-lang]").forEach(p => { if (p.textContent.trim()) paint(p); });
+
+  /* ---------- kopírování ---------- */
+  function copyText(text, btn, label) {
+    const done = ok => { const t = btn.textContent; btn.textContent = ok ? "Zkopírováno" : "Označeno, stiskni Ctrl+C"; setTimeout(() => btn.textContent = label || t, 1600); };
+    try {
+      navigator.clipboard.writeText(text).then(() => done(true), () => fallback());
+    } catch (e) { fallback(); }
+    function fallback() {
+      const pre = btn.closest(".code") && btn.closest(".code").querySelector("pre");
+      if (pre) { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+      done(false);
+    }
+  }
+  document.addEventListener("click", e => {
+    const b = e.target.closest(".copy");
+    if (!b) return;
+    const pre = b.closest(".code").querySelector("pre");
+    copyText(pre.dataset.raw || pre.textContent, b, "Kopírovat");
+  });
+
+  /* ---------- paleta ---------- */
+  const PAL = [
+    ["#0b0b1a", "pozadí stránky"], ["#12102b", "hlavička, patička"], ["#16123a", "karty, boxy"], ["#e8e8f5", "běžný text"],
+    ["#00f0ff", "neon tyrkysová"], ["#ff2bd6", "neon růžová"], ["#ffe14d", "neon žlutá"], ["#7c5cff", "fialová"]
+  ];
+  const pal = document.getElementById("pal");
+  PAL.forEach(([c, n]) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.style.setProperty("--c", c);
+    b.innerHTML = '<i></i><span><code>' + c + "</code><br>" + n + "</span>";
+    b.setAttribute("aria-label", "Zkopírovat barvu " + c + ", " + n);
+    b.addEventListener("click", () => {
+      const sp = b.querySelector("code"), old = sp.textContent;
+      try { navigator.clipboard.writeText(c).then(() => { sp.textContent = "zkopírováno"; setTimeout(() => sp.textContent = old, 1200); }, () => {}); } catch (e) {}
+    });
+    pal.appendChild(b);
+  });
+
+  /* ---------- strom selektorů ---------- */
+  const src = document.getElementById("tree-src"), treeEl = document.getElementById("tree"), map = new Map();
+  function label(el) {
+    let s = "&lt;" + el.tagName.toLowerCase();
+    if (el.id) s += ' id="' + el.id + '"';
+    if (el.className) s += ' class="' + el.className + '"';
+    s += "&gt;";
+    const t = Array.from(el.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join("");
+    return s + (t ? " " + esc(t) : "");
+  }
+  function build(el, parent) {
+    const wrap = document.createElement("div");
+    const row = document.createElement("div");
+    row.className = "node"; row.innerHTML = label(el);
+    map.set(el, row); wrap.appendChild(row);
+    if (el.children.length) {
+      const kids = document.createElement("div"); kids.className = "kids";
+      Array.from(el.children).forEach(c => build(c, kids));
+      wrap.appendChild(kids);
+    }
+    parent.appendChild(wrap);
+  }
+  Array.from(src.children).forEach(c => build(c, treeEl));
+  const SELS = ["a", "#hlavicka", "#hlavicka a", ".tlacitko", "#hero p", ".info-box a", "footer a"];
+  const tb = document.getElementById("tree-btns"), tout = document.getElementById("tree-out");
+  function pick(sel) {
+    map.forEach(r => r.classList.remove("hit"));
+    const hits = src.querySelectorAll(sel);
+    hits.forEach(h => map.get(h) && map.get(h).classList.add("hit"));
+    const n = hits.length;
+    tout.textContent = sel + "  →  vybráno " + n + (n === 1 ? " prvek" : n < 5 ? " prvky" : " prvků");
+    tb.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.s === sel));
+  }
+  SELS.forEach(s => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = s; b.dataset.s = s;
+    b.setAttribute("aria-pressed", "false"); b.addEventListener("click", () => pick(s)); tb.appendChild(b);
+  });
+  pick("#hlavicka a");
+
+  /* ---------- laboratoř box model ---------- */
+  const $ = id => document.getElementById(id);
+  function boxLab() {
+    const p = +$("bp-pad").value, b = +$("bp-bor").value, m = +$("bp-mar").value, r = +$("bp-rad").value, bs = $("bp-bs").value;
+    $("o-pad").textContent = p + "px"; $("o-bor").textContent = b + "px"; $("o-mar").textContent = m + "px"; $("o-rad").textContent = r + "px";
+    const box = $("bp-b");
+    box.style.padding = p + "px"; box.style.borderWidth = b + "px"; box.style.borderRadius = r + "px"; box.style.boxSizing = bs;
+    $("bp-m").style.padding = m + "px";
+    const total = bs === "border-box" ? 220 : 220 + 2 * p + 2 * b;
+    $("bp-ruler").textContent = "celková šířka krabice: " + total + " px";
+    $("bp-read").innerHTML = bs === "border-box"
+      ? "S <code>border-box</code> má krabice šířku přesně <b>220 px</b>. Padding a border se vejdou dovnitř a obsah se zúží na <b>" + Math.max(0, 220 - 2 * p - 2 * b) + " px</b>."
+      : "Šířka = 220 (obsah) + 2 × " + p + " (padding) + 2 × " + b + " (border) = <b>" + total + " px</b>. Margin je navíc kolem.";
+    setCode($("bp-code"), ".karta {\n    width: 220px;\n    padding: " + p + "px;\n    border: " + b + "px solid #ff2bd6;\n    margin: " + m + "px;\n    border-radius: " + r + "px;\n    box-sizing: " + bs + ";\n}");
+  }
+  ["bp-pad", "bp-bor", "bp-mar", "bp-rad", "bp-bs"].forEach(id => $(id).addEventListener("input", boxLab));
+  boxLab();
+
+  /* ---------- přepínací skupiny ---------- */
+  function seg(id, fn) {
+    const g = $(id);
+    g.addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      g.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+      fn(b.dataset.v || b.dataset.p);
+    });
+    const cur = g.querySelector('[aria-pressed="true"]'); if (cur) fn(cur.dataset.v || cur.dataset.p);
+  }
+
+  /* display */
+  const DISP = {
+    "inline": "Odkaz je řádkový. Padding vodorovně funguje, ale svisle přetéká přes text nad ním a pod ním. Řádek se nezvětšil.",
+    "inline-block": "Odkaz zůstal v řádku, ale je to krabice. Řádek se kvůli paddingu zvětšil a nic se nepřekrývá. Tohle použiješ u tlačítek a menu.",
+    "block": "Odkaz se roztáhl přes celou šířku a je na samostatném řádku. Pro tlačítko to nechceme."
+  };
+  seg("disp-seg", v => { $("disp-a").style.display = v; $("disp-txt").textContent = DISP[v]; });
+  $("disp-a").addEventListener("click", e => e.preventDefault());
+
+  /* background */
+  function bgLab(size) {
+    if (size) bgLab.size = size;
+    const s = bgLab.size || "cover", g = $("bg-grad").checked, d = $("bg-demo");
+    d.style.backgroundImage = (g ? "linear-gradient(rgba(11,11,26,0.2), rgba(11,11,26,0.95)), " : "") + 'url("img/hero.svg")';
+    d.style.backgroundSize = s; d.style.backgroundPosition = "center";
+    const img = g ? 'linear-gradient(rgba(11, 11, 26, 0.2), rgba(11, 11, 26, 0.95)),\n                      url("img/hero.svg")' : 'url("img/hero.svg")';
+    setCode($("bg-code"), "#hero {\n    background-image: " + img + ";\n    background-size: " + s + ";\n    background-position: center;\n}");
+  }
+  seg("bg-seg", bgLab);
+  $("bg-grad").addEventListener("change", () => bgLab());
+
+  /* gradient */
+  const COLS = [["#ff2bd6", "růžová"], ["#00f0ff", "tyrkysová"], ["#ffe14d", "žlutá"], ["#7c5cff", "fialová"], ["#2a0c4e", "tmavě fialová"], ["#12102b", "tmavá modrá"], ["#0b0b1a", "skoro černá"]];
+  function fill(sel, def) { COLS.forEach(([c, n]) => { const o = document.createElement("option"); o.value = c; o.textContent = n + " " + c; if (c === def) o.selected = true; sel.appendChild(o); }); }
+  fill($("g-c1"), "#ff2bd6"); fill($("g-c2"), "#00f0ff");
+  function gradLab() {
+    const a = $("g-ang").value, c1 = $("g-c1").value, c2 = $("g-c2").value;
+    $("o-ang").textContent = a + "deg";
+    $("grad-box").style.backgroundImage = "linear-gradient(" + a + "deg, " + c1 + ", " + c2 + ")";
+    setCode($("grad-code"), ".box {\n    background-image: linear-gradient(" + a + "deg, " + c1 + ", " + c2 + ");\n}");
+  }
+  ["g-ang", "g-c1", "g-c2"].forEach(id => $(id).addEventListener("input", gradLab));
+  gradLab();
+
+  /* shadow */
+  const SHC = [["0, 240, 255", "tyrkysová"], ["255, 43, 214", "růžová"], ["255, 225, 77", "žlutá"], ["0, 0, 0", "černá"]];
+  SHC.forEach(([c, n]) => { const o = document.createElement("option"); o.value = c; o.textContent = n + " rgb(" + c + ")"; $("sh-c").appendChild(o); });
+  function shLab() {
+    const x = $("sh-x").value, y = $("sh-y").value, bl = $("sh-b").value, sp = +$("sh-s").value, c = $("sh-c").value, a = (+$("sh-a").value).toFixed(2).replace(/0$/, "");
+    $("o-x").textContent = x + "px"; $("o-y").textContent = y + "px"; $("o-b").textContent = bl + "px"; $("o-s").textContent = sp + "px"; $("o-a").textContent = a;
+    const v = (x === "0" ? "0" : x + "px") + " " + (y === "0" ? "0" : y + "px") + " " + bl + "px" + (sp ? " " + sp + "px" : "") + " rgba(" + c + ", " + a + ")";
+    $("sh-card").style.boxShadow = v;
+    $("sh-card").style.borderColor = c === "0, 0, 0" ? "#2d2766" : "rgb(" + c + ")";
+    setCode($("sh-code"), ".karta {\n    box-shadow: " + v + ";\n}");
+  }
+  ["sh-x", "sh-y", "sh-b", "sh-s", "sh-c", "sh-a"].forEach(id => $(id).addEventListener("input", shLab));
+  seg("sh-pre", p => {
+    const P = p === "stin" ? { x: 0, y: 12, b: 20, s: 0, c: "0, 0, 0", a: 0.7 } : { x: 0, y: 0, b: 24, s: 0, c: "0, 240, 255", a: 0.4 };
+    $("sh-x").value = P.x; $("sh-y").value = P.y; $("sh-b").value = P.b; $("sh-s").value = P.s; $("sh-c").value = P.c; $("sh-a").value = P.a; shLab();
+  });
+
+  /* transition */
+  function trLab() { const d = $("tr-dur").value; $("o-dur").textContent = d + "s"; $("tr-slow").style.setProperty("--dur", d + "s"); $("tr-lbl").textContent = "transition: background-color " + d + "s, box-shadow " + d + "s"; }
+  $("tr-dur").addEventListener("input", trLab); trLab();
+
+  /* flex */
+  seg("fx-seg", v => {
+    const f = $("fx");
+    if (v === "none") { f.style.display = "block"; setCode($("fx-code"), "#hlavicka {\n    /* bez flexu: děti jsou pod sebou (nav je blokový prvek) */\n}"); return; }
+    f.style.display = "flex"; f.style.justifyContent = v; f.style.alignItems = "center"; f.style.gap = "10px";
+    setCode($("fx-code"), "#hlavicka {\n    display: flex;\n    justify-content: " + v + ";\n    align-items: center;\n}");
+  });
+
+  /* ---------- uložený postup ---------- */
+  const KEY = "neon-drift-pl";
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { saved = {}; }
+  const boxes = document.querySelectorAll("input[data-save]");
+  function progress() {
+    let n = 0;
+    document.querySelectorAll("input[data-done]").forEach(c => {
+      const link = document.querySelector('.side a[data-step="' + c.dataset.done + '"]');
+      if (link) link.classList.toggle("done", c.checked);
+      if (c.checked) n++;
+    });
+    $("prog").style.width = (n / 8 * 100) + "%";
+    $("prog-txt").textContent = "Hotovo " + n + " z 8 kroků";
+  }
+  boxes.forEach(c => {
+    if (saved[c.id]) c.checked = true;
+    c.addEventListener("change", () => {
+      saved[c.id] = c.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+      progress();
+    });
+  });
+  progress();
+
+  /* ---------- aktivní položka v menu ---------- */
+  const links = Array.from(document.querySelectorAll(".side a"));
+  const secs = links.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(ents => {
+      ents.forEach(en => {
+        if (en.isIntersecting) {
+          links.forEach(l => l.classList.toggle("active", l.getAttribute("href") === "#" + en.target.id));
+        }
+      });
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    secs.forEach(s => io.observe(s));
+  }
+})();
+</script>
+
+</body>
+</html>
