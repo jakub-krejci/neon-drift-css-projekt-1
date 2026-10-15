@@ -403,6 +403,13 @@ details > div { padding: 0 16px 6px; }
 
 .dl { display: inline-block; margin: 6px 0 4px; padding: 8px 16px; border-radius: 999px; background: var(--pink); color: var(--bg); font-weight: 700; text-decoration: none; font-size: 15px; }
 .dl:hover { background: var(--cyan); }
+
+/* zákaz kopírování kódu */
+.code pre, :not(pre) > code, .anatomy, .tree, .filetree { -webkit-user-select: none; user-select: none; }
+.code.allow-copy pre { -webkit-user-select: text; user-select: text; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-size: 15px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.3); z-index: 10; max-width: calc(100% - 32px); text-align: center; }
+.pribeh { font-size: 16.5px; }
+.ukol-body > .pribeh:first-child::before { content: "Co teď uděláš"; display: block; font-size: 12px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
 footer.end { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
 
 @media (prefers-reduced-motion: reduce) {
@@ -467,6 +474,11 @@ img { max-width: 100%; }
     <li>Po každé změně ulož <kbd>Ctrl</kbd> + <kbd>S</kbd>. Kód ti pěkně zarovná Prettier: <kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd>.</li>
   </ol>
 
+  <div class="box tip">
+    <p class="box-label">Kód piš ručně</p>
+    <p>Kód z pracovního listu nejde kopírovat. To je záměr: když ho píšeš sám, víc si zapamatuješ a všimneš si, co který řádek dělá. VS Code ti při psaní napovídá. Stačí napsat začátek vlastnosti (třeba <code>back</code>) a vybrat ze seznamu klávesou <kbd>Enter</kbd>. Jediná výjimka je dlouhý odkaz na Google Fonts v kroku 1.</p>
+  </div>
+
   <h4>Co je ve složce</h4>
 <div class="filetree">neon-drift/
 ├── <span class="hl">index.html</span>       <span class="note">hotové HTML, neměníš</span>
@@ -526,7 +538,7 @@ img { max-width: 100%; }
 
   <h3>Propojení HTML a CSS</h3>
   <p>V <code>index.html</code> v části <code>&lt;head&gt;</code> už je tento řádek:</p>
-  <div class="code"><div class="code-bar"><span>index.html</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="html">&lt;link rel="stylesheet" href="style.css"&gt;</pre></div>
+  <div class="code"><div class="code-bar"><span>index.html</span></div><pre data-lang="html">&lt;link rel="stylesheet" href="style.css"&gt;</pre></div>
   <ul>
     <li><code>rel="stylesheet"</code> říká prohlížeči: „tohle je soubor se styly“.</li>
     <li><code>href="style.css"</code> je cesta k souboru. Protože <code>style.css</code> leží ve stejné složce jako <code>index.html</code>, stačí jen jeho název.</li>
@@ -535,8 +547,9 @@ img { max-width: 100%; }
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 0</span><h4>Test propojení</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
+      <p class="pribeh">Než začneš psát opravdové styly, ověříš, že prohlížeč soubor <code>style.css</code> vůbec načítá. Kdyby propojení nefungovalo, žádný další kód by se neprojevil a hledal(a) bys chybu na úplně špatném místě. Napíšeš proto jedno schválně nápadné pravidlo: když celé pozadí zčervená, víš, že je všechno v pořádku.</p>
       <p>Napiš do <code>style.css</code> toto pravidlo a ulož:</p>
-      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">body {
+      <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">body {
     background-color: red;
 }</pre></div>
       <p>Zčervenalo pozadí? Propojení funguje. <strong>Pravidlo zase smaž.</strong></p>
@@ -576,7 +589,7 @@ img { max-width: 100%; }
     <div>
       <p class="krok-meta"><span>10 minut</span><span class="chip nav">Navedeno</span><span class="chip nove">Google Fonts</span></p>
       <h2>Písma a barvy</h2>
-      <p class="lead">Připojíš dvě písma z Google Fonts, stránce dáš tmavé pozadí a nastylováš nadpisy.</p>
+      <p class="lead">Připojíš dvě písma z Google Fonts, stránce dáš tmavé pozadí a nastyluješ nadpisy.</p>
     </div>
   </div>
 
@@ -593,8 +606,9 @@ img { max-width: 100%; }
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 1a</span><h4>Připoj písma (do index.html)</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
+      <p class="pribeh">Stránka zatím používá výchozí písmo prohlížeče a vypadá spíš jako školní referát než web závodní hry. Hra potřebuje písmo s charakterem. Nejdřív proto prohlížeči řekneš, odkud si má dvě nová písma stáhnout. Tohle se dělá v HTML, protože odkaz na písma musí být v hlavičce stránky, stejně jako odkaz na <code>style.css</code>.</p>
       <p>V <code>index.html</code> najdi komentář <code>&lt;!-- KROK 1: … --&gt;</code> a hned pod něj vlož tyto tři řádky:</p>
-      <div class="code"><div class="code-bar"><span>index.html</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="html">&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+      <div class="code allow-copy"><div class="code-bar"><span>index.html · tenhle odkaz můžeš zkopírovat</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="html">&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
 &lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
 &lt;link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&amp;family=Russo+One&amp;display=swap" rel="stylesheet"&gt;</pre></div>
       <ul>
@@ -616,7 +630,9 @@ img { max-width: 100%; }
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 1b</span><h4>Stránka a nadpisy (do style.css)</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
-      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">/* ===== KROK 1: Celá stránka, písma a nadpisy ===== */
+      <p class="pribeh">Teď nová písma použiješ a stránce dáš základní barvy. Začneš prvkem <code>body</code>. Je to rodič všech ostatních prvků, takže co nastavíš jemu (barvu pozadí a textu, písmo, velikost, řádkování), to po něm zdědí všechno uvnitř. Jedním pravidlem tak změníš celou stránku najednou.</p>
+      <p class="pribeh">Potom se zaměříš na nadpisy. Po <code>body</code> by zdědily běžné písmo Exo 2, ale nadpisy se mají od textu výrazně lišit. Všem třem úrovním proto nastavíš „závodní“ písmo Russo One. Nadpisy sekcí (<code>h2</code>) navíc dostanou neonovou tyrkysovou barvu a velká písmena, aby fungovaly jako jasné předěly mezi částmi stránky. Menší nadpisy karet a článků (<code>h3</code>) budou bílé.</p>
+      <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">/* ===== KROK 1: Celá stránka, písma a nadpisy ===== */
 
 body {
     background-color: #0b0b1a;
@@ -680,7 +696,7 @@ h3 {
     <div>
       <p class="krok-meta"><span>5 minut</span><span class="chip nav">Navedeno</span><span class="chip nove">#id</span><span class="chip nove">vnořený selektor</span></p>
       <h2>Nové selektory: id a vnořený</h2>
-      <p class="lead">Naučíš se vybrat jeden konkrétní prvek a prvky, které leží uvnitř jiného prvku. Nastylováš s nimi hlavičku.</p>
+      <p class="lead">Naučíš se vybrat jeden konkrétní prvek a prvky, které leží uvnitř jiného prvku. Nastyluješ s nimi hlavičku.</p>
     </div>
   </div>
 
@@ -721,7 +737,9 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 2</span><h4>Hlavička a odkazy v menu</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
-      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">/* ===== KROK 2: Hlavička ===== */
+      <p class="pribeh">Hlavička je první věc, kterou návštěvník uvidí. Oddělíš ji od zbytku stránky o odstín světlejším pozadím a logo s menu dáš doprostřed. Hlavička má v HTML <code>id</code>, takže ji vybereš selektorem <code>#hlavicka</code>.</p>
+      <p class="pribeh">Pak přijdou na řadu odkazy v menu. Teď jsou modré a podtržené, a to do tmavého designu nepatří. Nechceš ale změnit <strong>všechny</strong> odkazy na stránce, protože tlačítka budou vypadat úplně jinak. Proto použiješ vnořený selektor <code>#hlavicka a</code>, který vybere jen odkazy uvnitř hlavičky.</p>
+      <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">/* ===== KROK 2: Hlavička ===== */
 
 #hlavicka {
     background-color: #12102b;
@@ -802,7 +820,7 @@ h3 {
       </div>
     </div>
     <div class="lab-readout" id="bp-read"></div>
-    <div class="code"><div class="code-bar"><span>vygenerované CSS</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" id="bp-code"></pre></div>
+    <div class="code"><div class="code-bar"><span>vygenerované CSS</span></div><pre data-lang="css" id="bp-code"></pre></div>
   </div>
 
   <h3>Jak se zapisují hodnoty</h3>
@@ -894,11 +912,12 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 3a</span><h4>Základ: box-sizing a okraj stránky</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
-      <p>Prohlížeč dává <code>body</code> výchozí margin 8&nbsp;px, takže kolem stránky je rámeček. Vynulujeme ho. Pravidlo <code>*</code> napiš <strong>na úplný začátek</strong> souboru.</p>
-      <div class="code"><div class="code-bar"><span>style.css · na začátek</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">* {
+      <p class="pribeh">Než začneš nastavovat okraje, připravíš si dvě věci, které ti ušetří starosti. První je pravidlo s hvězdičkou, které všem prvkům nastaví <code>box-sizing: border-box</code>. Díky němu bude šířka, kterou napíšeš, opravdu výsledná šířka a nebudeš muset přičítat padding a rámeček. Patří na úplný začátek souboru, protože je to základ pro všechno ostatní.</p>
+      <p class="pribeh">Druhá věc: prohlížeč dává prvku <code>body</code> výchozí margin 8 px. Kvůli němu je teď kolem celé stránky tenký rámeček a hlavička nesahá až k okraji okna. Ten vynuluješ.</p>
+      <div class="code"><div class="code-bar"><span>style.css · na začátek</span></div><pre data-lang="css">* {
     box-sizing: border-box;
 }</pre></div>
-      <div class="code"><div class="code-bar"><span>style.css · doplň body</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">body {
+      <div class="code"><div class="code-bar"><span>style.css · doplň body</span></div><pre data-lang="css">body {
     margin: 0;                  /* NOVÉ */
     background-color: #0b0b1a;
     color: #e8e8f5;
@@ -912,7 +931,8 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 3b</span><h4>Hlavička</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
-      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">#hlavicka {
+      <p class="pribeh">Hlavička teď působí stísněně: logo je obrovské, odkazy se lepí na sebe a hlavička nijak výrazně nekončí. Dáš jí vnitřní okraj, aby obsah nebyl nalepený na hranu, a pod ni růžovou čáru, která ji oddělí od zbytku stránky. Logo zmenšíš na rozumnou výšku. Nakonec odkazům v menu přidáš padding, aby mezi nimi byly mezery a dalo se na ně pohodlně kliknout. Aby padding u odkazů fungoval správně, potřebují <code>display: inline-block</code> (proč, to ukazuje laboratoř výše).</p>
+      <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">#hlavicka {
     background-color: #12102b;
     text-align: center;
     padding: 16px 24px;                 /* NOVÉ */
@@ -939,8 +959,8 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 3c</span><h4>Sekce: šířka a centrování</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
-      <p>Všechny čtyři obsahové sekce mají třídu <code>sekce</code>. Jedním pravidlem je zúžíme, vycentrujeme a dáme jim vzduch.</p>
-      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">/* ===== KROK 3: Box model ===== */
+      <p class="pribeh">Na širokém monitoru se teď text roztahuje přes celou obrazovku a řádky jsou tak dlouhé, že se špatně čtou. Obsah proto zúžíš na nejvýš 900 px a vycentruješ ho. Všechny čtyři obsahové sekce mají třídu <code>sekce</code>, takže na to stačí jediné pravidlo. Zároveň sekcím přidáš velký padding nahoře a dole, aby byly od sebe jasně oddělené a stránka měla vzduch.</p>
+      <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">/* ===== KROK 3: Box model ===== */
 
 .sekce {
     max-width: 900px;       /* nejvýš 900 px široká */
@@ -953,6 +973,7 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 3d</span><h4>Ilustrace auta</h4><span class="chip sam">Samostatně</span></div>
     <div class="ukol-body">
+      <p class="pribeh">Ilustrace auta má ostré rohy a nic ji neohraničuje, takže na tmavé stránce působí jako cizí prvek. Roztáhneš ji přesně na šířku sekce a dáš jí fialový zaoblený rámeček, aby ladila s ostatním designem. Tady už hotový kód nedostaneš: podívej se do tabulky a pravidlo napiš sám.</p>
       <p>Napiš pravidlo pro selektor <code>.ilustrace</code> s těmito vlastnostmi:</p>
       <div class="tbl"><table>
         <thead><tr><th>Vlastnost</th><th>Hodnota</th><th>Co to udělá</th></tr></thead>
@@ -968,7 +989,8 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 3e</span><h4>Karty jezdců</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
-      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">.karta {
+      <p class="pribeh">Informace o jezdcích jsou zatím jen volný text pod sebou. Uděláš z nich kartičky, podobné kartám postav ve hrách: tmavé pozadí, rámeček, zaoblené rohy a vnitřní okraj. Každou kartu zúžíš a vycentruješ a pod každou necháš mezeru, aby se karty nelepily na sebe.</p>
+      <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">.karta {
     max-width: 420px;
     margin: 0 auto 24px auto;      /* vycentrovat + mezera 24 px pod každou kartou */
     padding: 32px 24px;
@@ -983,6 +1005,7 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 3f</span><h4>Obsah karty</h4><span class="chip sam">Samostatně</span></div>
     <div class="ukol-body">
+      <p class="pribeh">Karty už mají tvar, teď vyladíš jejich obsah. Z portrétů se stanou kulaté medailonky s neonovým rámečkem. Jméno jezdce přisuneš blíž k portrétu, pod něj dáš výraznou růžovou roli a statistiky zvýrazníš žlutou. Díky tomu se v kartě dá rychle zorientovat: kdo to je, co umí a jaká má čísla.</p>
       <p>Napiš čtyři pravidla podle tabulky. Pozor na selektor <code>.karta h3</code>: to je vnořený selektor z kroku 2 (nadpisy <strong>uvnitř</strong> karty).</p>
       <div class="tbl"><table>
         <thead><tr><th>Selektor</th><th>Vlastnost</th><th>Hodnota</th></tr></thead>
@@ -1060,7 +1083,7 @@ h3 {
       </div>
       <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14.5px;cursor:pointer"><input type="checkbox" id="bg-grad" style="margin:0"> přidat přes obrázek tmavý přechod (gradient)</label>
     </div>
-    <div class="code"><div class="code-bar"><span>CSS ukázky</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" id="bg-code"></pre></div>
+    <div class="code"><div class="code-bar"><span>CSS ukázky</span></div><pre data-lang="css" id="bg-code"></pre></div>
   </div>
 
   <div class="box nove">
@@ -1084,7 +1107,7 @@ h3 {
         <p class="small muted" style="margin:0">0deg = zdola nahoru, 90deg = zleva doprava, 180deg = shora dolů.</p>
       </div>
     </div>
-    <div class="code"><div class="code-bar"><span>vygenerované CSS</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" id="grad-code"></pre></div>
+    <div class="code"><div class="code-bar"><span>vygenerované CSS</span></div><pre data-lang="css" id="grad-code"></pre></div>
   </div>
 
   <h3>Vrstvení: gradient přes obrázek</h3>
@@ -1107,7 +1130,8 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 4a</span><h4>Pozadí hero sekce</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
-      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">/* ===== KROK 4: Hero sekce ===== */
+      <p class="pribeh">Úvodní sekce (hero) má hned navodit atmosféru hry. Dáš jí proto na pozadí obrázek nočního města. Obrázek je ale pestrý a bílý text by na něm splýval, takže přes něj položíš průhledný tmavý přechod. Ten obrázek ztmaví a dole ho plynule převede do barvy stránky, aby nebylo vidět, kde hero končí. Nakonec sekci dáš velký padding, aby byla vysoká a obsah stál uprostřed.</p>
+      <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">/* ===== KROK 4: Hero sekce ===== */
 
 #hero {
     background-image: linear-gradient(rgba(11, 11, 26, 0.2), rgba(11, 11, 26, 0.95)),
@@ -1124,6 +1148,7 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 4b</span><h4>Texty v hero sekci</h4><span class="chip sam">Samostatně</span></div>
     <div class="ukol-body">
+      <p class="pribeh">Pozadí je hotové, teď vyladíš text, který na něm leží. Hlavní nadpis bude obrovský a bílý, protože je to dominanta celé stránky. Malý štítek nad ním bude žlutý s velkými rozestupy písmen, jako popisky v herních menu. Podtitul trochu zvětšíš a pod ním necháš místo pro tlačítko. Hodnoty najdeš v tabulce.</p>
       <div class="tbl"><table>
         <thead><tr><th>Selektor</th><th>Vlastnost</th><th>Hodnota</th></tr></thead>
         <tbody>
@@ -1204,7 +1229,7 @@ h3 {
         <div class="ctl"><label for="sh-a">průhlednost <output id="o-a">0.4</output></label><input type="range" id="sh-a" min="0" max="1" step="0.05" value="0.4"></div>
       </div>
     </div>
-    <div class="code"><div class="code-bar"><span>vygenerované CSS</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" id="sh-code"></pre></div>
+    <div class="code"><div class="code-bar"><span>vygenerované CSS</span></div><pre data-lang="css" id="sh-code"></pre></div>
   </div>
 
   <div class="box nove">
@@ -1221,6 +1246,7 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 5a</span><h4>Záře karet</h4><span class="chip sam">Samostatně</span></div>
     <div class="ukol-body">
+      <p class="pribeh">Karty jezdců jsou zatím ploché a na tmavém pozadí trochu zanikají. Neonový styl stojí na tom, že věci svítí. Přidáš proto kartám jemnou tyrkysovou záři kolem dokola, jako by je zespodu podsvítil neon. Hodnoty dostaneš slovně, zápis už zvládneš sám.</p>
       <p>Do pravidla <code>.karta</code> přidej <code>box-shadow</code>: <strong>bez posunu</strong>, rozmazání <strong>24 px</strong>, barva tyrkysová <code>rgb(0, 240, 255)</code> s průhledností <strong>0.2</strong>.</p>
       <details><summary>Nápověda</summary><div><p>Průhlednou barvu zapíšeš jako <code>rgba(0, 240, 255, 0.2)</code>. Hodnota má čtyři části: posun x, posun y, rozmazání, barva.</p></div></details>
     </div>
@@ -1229,8 +1255,9 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 5b</span><h4>Svítící nadpis</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
+      <p class="pribeh">Hlavní nadpis je velký a bílý, ale chybí mu efekt neonové cedule. Dáš mu dvě růžové záře najednou: širokou a hodně rozmazanou a užší, silnější těsně u písmen. Dohromady vypadají jako svítící trubice.</p>
       <p>Do pravidla <code>#hero h1</code> přidej dvojitou růžovou záři:</p>
-      <div class="code"><div class="code-bar"><span>style.css · doplň do #hero h1</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" data-start="prop">    text-shadow: 0 0 24px #ff2bd6, 0 0 8px #ff2bd6;</pre></div>
+      <div class="code"><div class="code-bar"><span>style.css · doplň do #hero h1</span></div><pre data-lang="css" data-start="prop">    text-shadow: 0 0 24px #ff2bd6, 0 0 8px #ff2bd6;</pre></div>
       <p><strong>Bádej:</strong> zkus změnit barvu na <code>#00f0ff</code> nebo přidat třetí stín. Která varianta se ti líbí nejvíc?</p>
     </div>
   </div>
@@ -1289,7 +1316,8 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 6a</span><h4>Menu svítí při najetí myší</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
-      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">/* ===== KROK 6: Odkazy a tlačítka ===== */
+      <p class="pribeh">Stránka zatím na myš nijak nereaguje a uživatel nepozná, na co jde kliknout. Začneš u menu: když na odkaz najede myš, rozsvítí se tyrkysově. Aby se barva neměnila skokem, ale plynule, přidáš do běžného pravidla <code>transition</code>.</p>
+      <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">/* ===== KROK 6: Odkazy a tlačítka ===== */
 
 /* do existujícího pravidla #hlavicka a doplň: */
 #hlavicka a {
@@ -1307,7 +1335,8 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 6b</span><h4>Tlačítko</h4><span class="chip sam">Samostatně</span></div>
     <div class="ukol-body">
-      <p>Obě tlačítka na stránce mají třídu <code>tlacitko</code>, takže jedním pravidlem nastylujeme obě. Napiš pravidlo <code>.tlacitko</code>:</p>
+      <p class="pribeh">Odkazy „Přihlas se do turnaje“ a „Registrovat se“ jsou nejdůležitější akce na stránce, a proto mají vypadat jako tlačítka, ne jako obyčejný text. Dáš jim výraznou růžovou barvu, tvar pilulky, záři a ručičku místo šipky.</p>
+      <p>Obě tlačítka mají třídu <code>tlacitko</code>, takže jedno pravidlo <code>.tlacitko</code> nastyluje obě najednou. Napiš ho podle tabulky:</p>
       <div class="tbl"><table>
         <thead><tr><th>Vlastnost</th><th>Hodnota</th><th>Proč</th></tr></thead>
         <tbody>
@@ -1331,7 +1360,8 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 6c</span><h4>Tlačítko při najetí myší</h4><span class="chip nav">Navedeno</span></div>
     <div class="ukol-body">
-      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">.tlacitko:hover {
+      <p class="pribeh">Tlačítko ještě musí reagovat na myš, aby uživatel poznal, že je „živé“. Při najetí změní barvu z růžové na tyrkysovou a jeho záře zesílí. Protože jsi tlačítku v předchozím úkolu nastavil(a) <code>transition</code>, změna proběhne plynule.</p>
+      <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">.tlacitko:hover {
     background-color: #00f0ff;
     box-shadow: 0 0 32px rgba(0, 240, 255, 0.8);
 }</pre></div>
@@ -1341,6 +1371,7 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Úkol 6d</span><h4>Karta při najetí myší</h4><span class="chip sam">Samostatně</span></div>
     <div class="ukol-body">
+      <p class="pribeh">Stejný princip teď použiješ sám u karet jezdců. Když uživatel na kartu najede, má se rozsvítit, jako by si jezdce vybíral ve hře. Kód tentokrát nedostaneš, jen popis toho, co se má stát.</p>
       <p>Udělej, aby se karta jezdce při najetí myší „rozsvítila“:</p>
       <ul>
         <li>rámeček změní barvu na tyrkysovou <code>#00f0ff</code> (vlastnost <code>border-color</code>),</li>
@@ -1374,6 +1405,7 @@ h3 {
   </div>
 
   <h3>7a · Novinky</h3>
+  <p class="pribeh">Novinky jsou krátké články, které návštěvník rychle proletí očima. Každý článek má proto vypadat jako samostatný blok s výrazným datem nahoře. Tyrkysová čára vlevo funguje jako značka „tady začíná článek“ a vede oko odshora dolů.</p>
   <figure class="shot"><img src="img/k7-novinky.webp" alt="Cílový vzhled novinek: tři tmavé boxy s tyrkysovou čárou vlevo, růžové datum a bílý nadpis"><figcaption>Cíl: tři články pod sebou. Každý má tmavé pozadí, tyrkysovou čáru vlevo a zaoblené pravé rohy.</figcaption></figure>
   <details><summary>Nápověda 1: selektory a vlastnosti</summary><div>
     <ul>
@@ -1393,6 +1425,7 @@ h3 {
   </div></details>
 
   <h3>7b · Turnaj</h3>
+  <p class="pribeh">Na turnaj chceme lidi nalákat, a proto to bude nejvýraznější box na stránce. Žlutý rámeček se září ho odliší od všeho ostatního, protože žlutou zatím nic jiného nemá. Informace budou bez odrážek a vycentrované, aby box působil jako pozvánka.</p>
   <figure class="shot"><img src="img/k7-turnaj.webp" alt="Cílový vzhled turnaje: box se žlutým rámečkem a žlutou září, fialový přechod, žlutý nadpis NEON CUP 2026, seznam bez odrážek a růžové tlačítko"><figcaption>Cíl: box se šikmým fialovým přechodem, žlutým rámečkem a žlutou září. Seznam je bez odrážek.</figcaption></figure>
   <div class="box nove">
     <p class="box-label">Nové · seznam bez odrážek</p>
@@ -1419,6 +1452,7 @@ h3 {
   </div></details>
 
   <h3>7c · Patička</h3>
+  <p class="pribeh">Patička uzavírá stránku. Obsahuje jen doplňkové informace, takže nemá na sebe strhávat pozornost: menší šedý text na tmavém pruhu. Růžová čára nahoře zrcadlí čáru pod hlavičkou, takže stránka začíná i končí stejným prvkem.</p>
   <figure class="shot"><img src="img/k7-paticka.webp" alt="Cílový vzhled patičky: tmavý pruh s růžovou čárou nahoře, šedý vycentrovaný text a tyrkysový odkaz"><figcaption>Cíl: tmavý pruh přes celou šířku, růžová čára nahoře, menší šedý text uprostřed, tyrkysový odkaz.</figcaption></figure>
   <details><summary>Nápověda 1: selektory a vlastnosti</summary><div>
     <ul>
@@ -1459,7 +1493,7 @@ h3 {
     <div class="ukol-head"><span class="ukol-id">Bonus 1</span><h4>Plynulé posouvání stránky</h4><span class="chip bon">Bonus</span></div>
     <div class="ukol-body">
       <p>Když teď klikneš v menu na „Turnaj“, stránka na sekci skočí. S touto vlastností se k ní plynule posune:</p>
-      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">html {
+      <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">html {
     scroll-behavior: smooth;
 }</pre></div>
     </div>
@@ -1483,7 +1517,7 @@ h3 {
         <button type="button" data-v="space-around" aria-pressed="false">space-around</button>
       </div>
     </div>
-    <div class="code"><div class="code-bar"><span>CSS ukázky</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css" id="fx-code"></pre></div>
+    <div class="code"><div class="code-bar"><span>CSS ukázky</span></div><pre data-lang="css" id="fx-code"></pre></div>
   </div>
 
   <div class="ukol">
@@ -1499,7 +1533,7 @@ h3 {
     <div class="ukol-head"><span class="ukol-id">Bonus 3</span><h4>Karty jezdců vedle sebe</h4><span class="chip bon">Bonus</span></div>
     <div class="ukol-body">
       <p>Karty jsou zabalené v <code>&lt;div class="karty"&gt;</code>. Udělej z něj flex kontejner, aby byly 4 karty v jedné řadě.</p>
-      <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">.karty {
+      <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">.karty {
     display: flex;
     flex-wrap: wrap;       /* když se karty nevejdou, zalomí se na další řádek */
     gap: 24px;             /* mezera mezi kartami */
@@ -1529,13 +1563,14 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Bonus 4</span><h4>Tlačítko a karty se pohnou</h4><span class="chip bon">Bonus</span></div>
     <div class="ukol-body">
+      <p class="pribeh">Stránka už svítí a mění barvy, teď se i pohne. Malý pohyb při najetí myší dodá tlačítkům a kartám pocit, že se dají „zmáčknout“.</p>
       <ul>
         <li>Tlačítko se při najetí myší zvětší: <code>transform: scale(1.08);</code></li>
         <li>Karta jezdce při najetí myší vyskočí nahoru: <code>transform: translateY(-8px);</code></li>
         <li>Aby byl pohyb plynulý, přidej <code>transform 0.3s</code> do seznamu v <code>transition</code> (oddělené čárkou).</li>
       </ul>
       <details><summary>Nápověda</summary><div>
-        <div class="code"><div class="code-bar"><span>style.css</span><button class="copy" type="button">Kopírovat</button></div><pre data-lang="css">.tlacitko {
+        <div class="code"><div class="code-bar"><span>style.css</span></div><pre data-lang="css">.tlacitko {
     transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s;
 }
 
@@ -1550,6 +1585,7 @@ h3 {
   <div class="ukol">
     <div class="ukol-head"><span class="ukol-id">Bonus 5</span><h4>Udělej si to po svém</h4><span class="chip bon">Bonus</span></div>
     <div class="ukol-body">
+      <p class="pribeh">Teď je to tvoje stránka. Zkus jí dát vlastní podpis:</p>
       <ul>
         <li>Změň barevné schéma: třeba místo růžové použij zelenou <code>#3ddc84</code> nebo oranžovou <code>#ff8a3d</code>. Funkce <strong>Najít a nahradit</strong> (<kbd>Ctrl</kbd> + <kbd>H</kbd>) ve VS Code ti ušetří práci.</li>
         <li>Vyber jiné písmo na Google Fonts.</li>
@@ -1844,6 +1880,28 @@ h3 {
     f.style.display = "flex"; f.style.justifyContent = v; f.style.alignItems = "center"; f.style.gap = "10px";
     setCode($("fx-code"), "#hlavicka {\n    display: flex;\n    justify-content: " + v + ";\n    align-items: center;\n}");
   });
+
+  /* ---------- zákaz kopírování kódu ---------- */
+  let toastEl = null, toastT = 0;
+  function toast(msg) {
+    if (!toastEl) { toastEl = document.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); document.body.appendChild(toastEl); }
+    toastEl.textContent = msg; toastEl.hidden = false;
+    clearTimeout(toastT); toastT = setTimeout(() => { toastEl.hidden = true; }, 2200);
+  }
+  const NOCOPY = ".code:not(.allow-copy) pre, :not(pre) > code, .anatomy, .tree, .filetree";
+  function selHitsCode() {
+    const sel = getSelection();
+    if (!sel || sel.isCollapsed) return false;
+    const rs = []; for (let i = 0; i < sel.rangeCount; i++) rs.push(sel.getRangeAt(i));
+    return Array.from(document.querySelectorAll(NOCOPY)).some(n => !n.closest(".allow-copy") && rs.some(r => r.intersectsNode(n)));
+  }
+  ["copy", "cut"].forEach(ev => document.addEventListener(ev, e => {
+    if (selHitsCode()) { e.preventDefault(); toast("Kód opiš ručně, při psaní se ho naučíš."); }
+  }));
+  document.addEventListener("contextmenu", e => {
+    if (e.target.closest(NOCOPY)) { e.preventDefault(); toast("Kód opiš ručně, při psaní se ho naučíš."); }
+  });
+  document.addEventListener("dragstart", e => { if (e.target.closest && e.target.closest(NOCOPY)) e.preventDefault(); });
 
   /* ---------- uložený postup ---------- */
   const KEY = "neon-drift-pl";
